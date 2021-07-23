@@ -1,0 +1,17 @@
+{
+	"name": "artist-pong",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "nodemon index.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^4.17.1",
+		"firebase": "^8.8.0",
+		"google-spreadsheet": "^3.1.15",
+		"nodemon": "^2.0.12"
+	}
+}
