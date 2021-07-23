@@ -9,9 +9,9 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"convert-excel-to-json": "^1.7.0",
 		"express": "^4.17.1",
 		"firebase": "^8.8.0",
-		"google-spreadsheet": "^3.1.15",
 		"nodemon": "^2.0.12"
 	}
 }
