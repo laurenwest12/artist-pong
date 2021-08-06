@@ -1,4 +1,5 @@
 const { db } = require('./db');
+const { getSpotifyData } = require('../helperFunctions/spotifySearch');
 
 const getArtistNames = (arr) => {
 	const uniqueNames = arr.reduce((acc, obj) => {
@@ -33,8 +34,23 @@ const createArtists = (arr) => {
 	console.log('Artists created');
 };
 
+const getSpotifyArtistData = async (arr) => {
+	const pArray = await arr.map(async (artist) => {
+		const spotifyData = await getSpotifyData(artist, 'artist');
+		const firstResult = spotifyData.artists.items[0];
+		return {
+			dbName: artist,
+			spotifyName: firstResult && firstResult.name,
+			id: firstResult && firstResult.id,
+		};
+	});
+	const shopifyData = await Promise.all(pArray).then((data) => data);
+	return shopifyData;
+};
+
 module.exports = {
 	getArtistNames,
 	createArtists,
 	getArtistsFromDb,
+	getSpotifyArtistData,
 };

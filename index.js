@@ -27,6 +27,7 @@ const {
 	getArtistNames,
 	createArtists,
 	getArtistsFromDb,
+	getSpotifyArtistData,
 } = require('./db/Artist');
 const { getPongNames, createPongs, deletePongs } = require('./db/Pong');
 
@@ -42,9 +43,13 @@ app.get('/', async (req, res) => {
 	} else {
 		let token = req.session.access_token;
 		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-		// const lmData = await getSpotifyData('Little Mix', 'artist');
-		// const lm = lmData.artists.items[0];
-		// console.log(lm);
+		const artists = await getArtistsFromDb();
+		const artistData = await getSpotifyArtistData(artists);
+
+		const artistsWithoutAMatch = artistData.filter(
+			(artist) => artist.dbName !== artist.spotifyName
+		);
+		console.log(artistsWithoutAMatch);
 		res.send('Hello World');
 	}
 });
