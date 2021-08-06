@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const fetch = require('node-fetch');
-const { encodeFormData } = require('../helperFunctions/encodeFormData');
-const querystring = require('querystring');
+const { response } = require('express');
+const request = require('request');
+// const querystring = require('querystring');
 const { client_id, redirect_uri, client_secret, scope } = require('../config');
 
 router.get('/login', async (req, res) => {
@@ -11,27 +11,31 @@ router.get('/login', async (req, res) => {
 });
 
 router.get('/callback', async (req, res) => {
-	let body = {
-		grant_type: 'authorization_code',
-		code: req.query.code,
-		redirect_uri,
-		client_id,
-		client_secret,
+	let code = req.query.code;
+
+	let authOptions = {
+		url: 'https://accounts.spotify.com/api/token',
+		form: {
+			code: code,
+			redirect_uri: redirect_uri,
+			grant_type: 'authorization_code',
+		},
+		headers: {
+			Authorization:
+				'Basic ' +
+				Buffer.from(client_id + ':' + client_secret).toString('base64'),
+		},
+		json: true,
 	};
 
-	await fetch('https://accounts.spotify.com/api/token', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-			Accept: 'application/json',
-		},
-		body: encodeFormData(body),
-	})
-		.then((resp) => resp.json)
-		.then((data) => {
-			let query = querystring.stringify(data);
-			res.redirect(`http://localhost:8888/${query}`);
-		});
+	request.post(authOptions, (err, res, body) => {
+		if (!err && response.statusCode === 200) {
+			let access_token = body.access_token;
+			let refresh_token = body.access_token;
+		} else {
+			console.log(err);
+		}
+	});
 });
 
 module.exports = router;
