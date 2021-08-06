@@ -23,7 +23,11 @@ app.use(cors());
 app.use('/', auth);
 
 //Database information
-const { getArtistNames } = require('./db/Artist');
+const {
+	getArtistNames,
+	createArtists,
+	getArtistsFromDb,
+} = require('./db/Artist');
 const { getPongNames, createPongs, deletePongs } = require('./db/Pong');
 
 //Data that was stored in an Excel doc
