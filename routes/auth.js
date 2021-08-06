@@ -28,10 +28,13 @@ router.get('/callback', async (req, res) => {
 		json: true,
 	};
 
-	request.post(authOptions, (err, res, body) => {
+	request.post(authOptions, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
 			let access_token = body.access_token;
 			let refresh_token = body.access_token;
+			req.session.access_token = access_token;
+			req.session.refresh_token = refresh_token;
+			res.redirect('/');
 		} else {
 			console.log(err);
 		}

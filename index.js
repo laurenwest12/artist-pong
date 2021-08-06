@@ -1,9 +1,17 @@
 const express = require('express');
 const app = express();
+const session = require('express-session');
 const cors = require('cors');
 const PORT = process.env.PORT || 8888;
 const auth = require('./routes/auth');
 
+app.use(
+	session({
+		secret: 'this will be better later',
+		resave: false,
+		saveUninitialized: false,
+	})
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -21,6 +29,15 @@ const { searchArtist, authorizationURL } = require('./spotify/spotify');
 const excelToJson = require('convert-excel-to-json');
 const result = excelToJson({
 	sourceFile: './spreadsheetData.xlsx',
+});
+
+app.get('/', (req, res) => {
+	if (!req.session.access_token) {
+		res.redirect('/login');
+	} else {
+		console.log(req.session.access_token);
+		res.send('Hello World');
+	}
 });
 
 app.listen(PORT, async () => {
