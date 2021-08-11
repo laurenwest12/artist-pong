@@ -5,8 +5,6 @@ const cors = require('cors');
 const axios = require('axios');
 const PORT = process.env.PORT || 8888;
 
-const { getSpotifyData } = require('./helperFunctions/spotifySearch');
-
 const auth = require('./routes/auth');
 
 app.use(
@@ -22,15 +20,6 @@ app.use(cors());
 
 app.use('/', auth);
 
-//Database information
-const {
-	getArtistNames,
-	createArtists,
-	getArtistsFromDb,
-	getSpotifyArtistData,
-} = require('./db/Artist');
-const { getPongNames, createPongs, deletePongs } = require('./db/Pong');
-
 //Data that was stored in an Excel doc
 const excelToJson = require('convert-excel-to-json');
 const result = excelToJson({
@@ -41,15 +30,10 @@ app.get('/', async (req, res) => {
 	if (!req.session.access_token) {
 		res.redirect('/login');
 	} else {
+		//Add authorization token to axios calls
 		let token = req.session.access_token;
 		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-		const artists = await getArtistsFromDb();
-		const artistData = await getSpotifyArtistData(artists);
 
-		const artistsWithoutAMatch = artistData.filter(
-			(artist) => artist.dbName !== artist.spotifyName
-		);
-		console.log(artistsWithoutAMatch);
 		res.send('Hello World');
 	}
 });
