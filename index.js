@@ -7,6 +7,14 @@ const PORT = process.env.PORT || 8888;
 
 const auth = require('./routes/auth');
 
+const { getUsers, createUsers } = require('./db/User');
+const {
+	createPickedItems,
+	getReferences,
+	updatePickedItems,
+	updateOtherCollections,
+} = require('./db/PickedItems');
+
 app.use(
 	session({
 		secret: 'this will be better later',
@@ -27,19 +35,24 @@ const result = excelToJson({
 });
 
 app.get('/', async (req, res) => {
-	if (!req.session.access_token) {
-		res.redirect('/login');
-	} else {
-		//Add authorization token to axios calls
-		let token = req.session.access_token;
-		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+	// if (!req.session.access_token) {
+	// 	res.redirect('/login');
+	// } else {
+	// 	//Add authorization token to axios calls
+	// 	let token = req.session.access_token;
+	// 	axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-		res.send('Hello World');
-	}
+	// 	res.send('Hello World');
+	// }
+
+	res.send(result['Sheet1'].slice(1));
 });
 
 app.listen(PORT, async () => {
 	console.log('App is listening...');
+	const data = result['Sheet1'].slice(1);
+	await updateOtherCollections(data.slice(0, 10));
+	//await updatePickedItems(data.slice(0, 259));
 	// const pongNames = getPongNames(result['Sheet1']);
 	// const artistNames = getArtistNames(result['Sheet1']);
 });
