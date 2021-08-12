@@ -10,9 +10,9 @@ const auth = require('./routes/auth');
 const { getUsers, createUsers } = require('./db/User');
 const {
 	createPickedItems,
-	getReferences,
 	updatePickedItems,
-	updateOtherCollections,
+	deletePickedItems,
+	addPickedItems,
 } = require('./db/PickedItems');
 
 app.use(
@@ -51,7 +51,8 @@ app.get('/', async (req, res) => {
 app.listen(PORT, async () => {
 	console.log('App is listening...');
 	const data = result['Sheet1'].slice(1);
-	await updateOtherCollections(data.slice(0, 10));
+	await addPickedItems();
+	//await updateOtherCollections(data.slice(0, 1));
 	//await updatePickedItems(data.slice(0, 259));
 	// const pongNames = getPongNames(result['Sheet1']);
 	// const artistNames = getArtistNames(result['Sheet1']);

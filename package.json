@@ -17,6 +17,7 @@
 		"express": "^4.17.1",
 		"express-session": "^1.17.2",
 		"firebase": "^8.8.0",
+		"firebase-admin": "^9.11.0",
 		"nodemon": "^2.0.12",
 		"querystring": "^0.2.1",
 		"request": "^2.88.2",

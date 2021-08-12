@@ -1,37 +1,71 @@
+const admin = require('firebase-admin');
+
 const { db } = require('./db');
-const { getReferenceId } = require('./helperFunctions/getReferences');
+const { getReferenceObj } = require('./helperFunctions/getReferences');
 
-const createPickedItems = (arr) => {
-	arr.forEach((item) => {
-		let pong = item['A'];
-		let artist = item['B'];
-		let user = item['D'];
-		let numSongs = item['E'];
+const createPickedItems = async (arr) => {
+	let pick = 1;
+	for (let i = 0; i < arr.length; ++i) {
+		let current = arr[i];
+		let pong = current['A'];
+		let artist = current['B'];
+		let user = current['D'];
+		let numSongs = current['E'];
+		let lastCall = current['I'] ? 'Y' : 'N';
+		let id;
 
-		let data = {
+		//Find the # of pick in pong for each picked item
+		if (i !== 0) {
+			const previous = arr[i - 1];
+			if (previous['A'] !== current['A']) {
+				pick = 1;
+			} else {
+				pick++;
+			}
+		}
+
+		id = `${pong}-${pick}-${user}`;
+
+		const data = {
 			pong: db.doc('Pong/' + pong),
 			artist: db.doc('Artist/' + artist),
 			user: db.doc('User/' + user),
 			numSongs,
-			lastCall: item['I'] ? 'Y' : 'N',
+			lastCall,
 		};
 
-		db.collection('PickedItems')
-			.doc(`${pong}-${user}-${numSongs}`)
-			.set(data);
+		await db.collection('PickedItems').doc(id).set(data);
+	}
+	console.log('Picked items created');
+};
+
+const deletePickedItems = async () => {
+	const pickedItemsRef = db.collection('PickedItems');
+	const pickedItemsSnap = await pickedItemsRef.get();
+
+	pickedItemsSnap.forEach(async (doc) => {
+		await db
+			.collection('PickedItems')
+			.doc(doc.id)
+			.delete()
+			.then(() => {
+				console.log('Document successfully deleted!');
+			})
+			.catch((error) => {
+				console.error('Error removing document: ', error);
+			});
 	});
-	console.log('Picked Items created');
 };
 
 const updatePickedItems = async (arr) => {
 	arr.forEach(async (item) => {
-		let pong = item['A'];
-		let user = item['D'];
-		let numSongs = item['E'];
+		const pong = item['A'];
+		const user = item['D'];
+		const numSongs = item['E'];
 
-		let id = `${pong}-${user}-${numSongs}`;
+		const id = `${pong}-${user}-${numSongs}`;
 
-		let docRef = db.collection('PickedItems').doc(id);
+		const docRef = db.collection('PickedItems').doc(id);
 
 		const res = await docRef.update({
 			lastCall: item['I'] ? 'Y' : 'N',
@@ -40,30 +74,101 @@ const updatePickedItems = async (arr) => {
 	console.log('Picked items updated');
 };
 
-const updateOtherCollections = async (arr) => {
-	arr.forEach(async (item) => {
-		let pong = item['A'];
-		let user = item['D'];
-		let numSongs = item['E'];
+const addPickedItems = async () => {
+	const pickedItemsRef = db.collection('PickedItems');
+	const pickedItemsSnap = await pickedItemsRef.get();
 
-		let id = `${pong}-${user}-${numSongs}`;
+	let data = [];
 
-		const artistId = await getReferenceId(
+	pickedItemsSnap.forEach(async (doc) => {
+		// const id = doc.id;
+		data.push({
+			id: doc.id,
+			...doc.data(),
+		});
+		// const data = doc.data();
+
+		// const artist = await getReferenceObj(
+		// 	'PickedItems',
+		// 	id,
+		// 	'artist',
+		// 	'Artist'
+		// );
+		// console.log(artist);
+	});
+
+	data.slice(0, 1).forEach(async (doc) => {
+		const { id } = doc;
+
+		const artist = await getReferenceObj(
 			'PickedItems',
 			id,
 			'artist',
 			'Artist'
 		);
-		console.log(artistId);
-		// let docRef = db.collection('PickedItems').doc(id);
-		// const snapshot = await docRef.get();
 
-		// console.log(snapshot.data());
+		let artistPickedItems;
+		if (artist.pickedItems) {
+			artistPickedItems = [
+				...artist.pickedItems,
+				db.doc(`PickedItems/${id}`),
+			];
+		} else {
+			artistPickedItems = [db.doc(`PickedItems/${doc}`)];
+		}
+
+		const artistRef = db.collection('Artist').doc(artist.collectionId);
+		const artistRes = await artistRef.update({
+			pickedItems: artistPickedItems,
+		});
+
+		console.log(artistRes);
 	});
+
+	// arr.forEach(async (item) => {
+	// 	const pong = item['A'];
+	// 	const user = item['D'];
+	// 	const numSongs = item['E'];
+
+	// 	const id = `${pong}-${user}-${numSongs}`;
+
+	// 	const artistObj = await getReferenceObj(
+	// 		'PickedItems',
+	// 		id,
+	// 		'artist',
+	// 		'Artist'
+	// 	);
+
+	// 	const artistRef = db.collection('Artist').doc(artistObj.collectionId);
+
+	// 	const artistRes = await artistRef.update({
+	// 		pickedItems: [...artistObj['pickedItems'], id],
+	// 	});
+
+	// 	// const artistId = await getReferenceId(
+	// 	// 	'PickedItems',
+	// 	// 	id,
+	// 	// 	'artist',
+	// 	// );
+	// 	// const artistRef = db.collection('Artist').doc(artistId);
+	// 	// console.log(id);
+	// 	// const artistRes = await artistRef.update({
+	// 	// 	pickedItems: admin.firestore.FieldValue.arrayUnion(pickedItem),
+	// 	// });
+
+	// 	// const pongId = await getReferenceId('PickedItems', id, 'pong', 'Pong');
+
+	// 	// const userId = await getReferenceId('PickedItems', id, 'user', 'User');
+	// 	// let docRef = db.collection('PickedItems').doc(id);
+	// 	// const snapshot = await docRef.get();
+
+	// 	// console.log(snapshot.data());
+	// });
 };
 
 module.exports = {
 	createPickedItems,
+	deletePickedItems,
 	updatePickedItems,
-	updateOtherCollections,
+	addPickedItems,
 };
