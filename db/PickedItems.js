@@ -109,20 +109,23 @@ const addPickedItems = async () => {
 
 		let artistPickedItems;
 		if (artist.pickedItems) {
-			artistPickedItems = [
-				...artist.pickedItems,
-				db.doc(`PickedItems/${id}`),
-			];
+			let ids = artist.pickedItems.map((item) => item.id);
+			if (!ids.includes(id)) {
+				artistPickedItems = [
+					...artist.pickedItems,
+					db.doc(`PickedItems/${id}`),
+				];
+			}
 		} else {
 			artistPickedItems = [db.doc(`PickedItems/${doc}`)];
 		}
 
-		const artistRef = db.collection('Artist').doc(artist.collectionId);
-		const artistRes = await artistRef.update({
-			pickedItems: artistPickedItems,
-		});
-
-		console.log(artistRes);
+		if (artistPickedItems) {
+			const artistRef = db.collection('Artist').doc(artist.collectionId);
+			await artistRef.update({
+				pickedItems: artistPickedItems,
+			});
+		}
 	});
 
 	// arr.forEach(async (item) => {
