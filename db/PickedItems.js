@@ -4,6 +4,7 @@ const { db } = require('./db');
 const {
 	getReferenceObj,
 	addPickedItemsReferences,
+	addPickedItemsById,
 } = require('./helperFunctions/references');
 
 const createPickedItems = async (arr) => {
@@ -15,7 +16,6 @@ const createPickedItems = async (arr) => {
 		let user = current['D'];
 		let numSongs = current['E'];
 		let lastCall = current['I'] ? 'Y' : 'N';
-		let id;
 
 		//Find the # of pick in pong for each picked item
 		if (i !== 0) {
@@ -27,17 +27,43 @@ const createPickedItems = async (arr) => {
 			}
 		}
 
-		id = `${pong}-${pick}-${user}`;
+		if (pong.indexOf('Pong') === -1) {
+			newPong = pong + ' Pong';
 
-		const data = {
-			pong: db.doc('Pong/' + pong),
-			artist: db.doc('Artist/' + artist),
-			user: db.doc('User/' + user),
-			numSongs,
-			lastCall,
-		};
+			let id = `${newPong}-${pick}-${user}`;
 
-		await db.collection('PickedItems').doc(id).set(data);
+			const data = {
+				pong: newPong,
+				artist,
+				user,
+				numSongs,
+				lastCall,
+			};
+
+			await db.collection('PickedItems').doc(id).set(data);
+		} else {
+			let id = `${pong}-${pick}-${user}`;
+
+			const data = {
+				pong,
+				artist,
+				user,
+				numSongs,
+				lastCall,
+			};
+
+			await db.collection('PickedItems').doc(id).set(data);
+		}
+
+		// //Find the # of pick in pong for each picked item
+		// if (i !== 0) {
+		// 	const previous = arr[i - 1];
+		// 	if (previous['A'] !== current['A']) {
+		// 		pick = 1;
+		// 	} else {
+		// 		pick++;
+		// 	}
+		// }
 	}
 	console.log('Picked items created');
 };
@@ -77,15 +103,45 @@ const updatePickedItems = async (arr) => {
 	console.log('Picked items updated');
 };
 
+// const addPickedItems = async () => {
+// 	const pickedItemsRef = db.collection('PickedItems');
+// 	const pickedItemsSnap = await pickedItemsRef.get();
+// 	let test = [];
+
+// 	pickedItemsSnap.forEach((doc) => {
+// 		test.push(doc);
+// 	});
+
+// 	test.forEach(async (doc) => {
+// 		const id = doc.id;
+// 		await addPickedItemsReferences('PickedItems', id, 'artist', 'Artist');
+// 		await addPickedItemsReferences('PickedItems', id, 'pong', 'Pong');
+// 		await addPickedItemsReferences('PickedItems', id, 'user', 'User');
+// 	});
+// };
+
 const addPickedItems = async () => {
 	const pickedItemsRef = db.collection('PickedItems');
 	const pickedItemsSnap = await pickedItemsRef.get();
+	let pickedItemsData = [];
 
-	pickedItemsSnap.forEach(async (doc) => {
+	pickedItemsSnap.forEach((doc) => {
+		let obj = {
+			id: doc.id,
+			...doc.data(),
+		};
+		pickedItemsData.push(obj);
+	});
+
+	pickedItemsData.slice(51).forEach(async (doc) => {
 		const id = doc.id;
-		await addPickedItemsReferences('PickedItems', id, 'artist', 'Artist');
-		await addPickedItemsReferences('PickedItems', id, 'pong', 'Pong');
-		await addPickedItemsReferences('PickedItems', id, 'user', 'User');
+		let artistId = doc.artist;
+		// let pongId = doc.pong;
+		// let userId = doc.user;
+
+		await addPickedItemsById(id, artistId, 'Artist');
+		//await addPickedItems(id, pongId, 'Pong');
+		//await addPickedItems(id, userId, 'User');
 	});
 };
 

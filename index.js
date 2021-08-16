@@ -51,6 +51,8 @@ app.get('/', async (req, res) => {
 app.listen(PORT, async () => {
 	console.log('App is listening...');
 	const data = result['Sheet1'].slice(1);
+	//await deletePickedItems();
+	//await createPickedItems(data);
 	await addPickedItems();
 	//await updateOtherCollections(data.slice(0, 1));
 	//await updatePickedItems(data.slice(0, 259));

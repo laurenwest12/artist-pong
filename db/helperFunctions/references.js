@@ -9,10 +9,53 @@ const getReferenceObj = async (initColl, initId, destVar, destColl) => {
 	const destRef = db.collection(destColl).doc(destData.id);
 	const destSnap = await destRef.get();
 	const objData = destSnap.data();
+
+	// console.log(destData.id);
+	// if (destData.id.indexOf('Pong') === -1) {
+	// 	console.log(objData);
+	// }
+
 	return {
 		collectionId: destData.id,
 		...objData,
 	};
+};
+
+const getReferenceById = async (id, coll) => {
+	const ref = db.collection(coll).doc(id);
+	const snap = await ref.get();
+	const data = snap.data();
+	return {
+		collectionId: id,
+		...data,
+	};
+};
+
+const addPickedItemsById = async (initId, destId, destColl) => {
+	const dest = await getReferenceById(destId, destColl);
+
+	let destPickedItems;
+
+	if (dest.pickedItems.length >= 1) {
+		if (!dest.pickedItems.includes(initId)) {
+			destPickedItems = [...dest.pickedItems, initId];
+		}
+	} else {
+		destPickedItems = [initId];
+	}
+
+	if (destPickedItems) {
+		try {
+			const ref = db.collection(destColl).doc(destId);
+			await ref.update({
+				pickedItems: destPickedItems,
+			});
+		} catch (err) {
+			console.log(dest.collectionId, err.message);
+		}
+	}
+
+	console.log(initId);
 };
 
 const addPickedItemsReferences = async (
@@ -37,14 +80,19 @@ const addPickedItemsReferences = async (
 	}
 
 	if (destPickedItems) {
-		const destRef = db.collection(destColl).doc(dest.collectionId);
-		await destRef.update({
-			pickedItems: destPickedItems,
-		});
+		try {
+			const destRef = db.collection(destColl).doc(dest.collectionId);
+			await destRef.update({
+				pickedItems: destPickedItems,
+			});
+		} catch (err) {
+			console.log(dest.collectionId, err.message);
+		}
 	}
 };
 
 module.exports = {
 	getReferenceObj,
+	addPickedItemsById,
 	addPickedItemsReferences,
 };
