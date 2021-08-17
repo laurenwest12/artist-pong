@@ -36,5 +36,5 @@ app.get('/', async (req, res) => {
 
 app.listen(PORT, async () => {
 	console.log('App is listening...');
-	//syncAndSeed();
+	syncAndSeed();
 });

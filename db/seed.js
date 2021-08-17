@@ -27,7 +27,6 @@ const syncAndSeed = async () => {
 	const pongs = getUniqueValues('A');
 	const users = getUniqueValues('D');
 
-	return artists;
 	// const usersData = users.map((user) => {
 	// 	return {
 	// 		username: user,
@@ -35,14 +34,39 @@ const syncAndSeed = async () => {
 	// 	};
 	// });
 
-	// return db
-	// 	.authenticate()
-	// 	.then(() => db.sync({ force: true }))
-	// 	.then(async () => {
-	// 		console.log('Authenticated');
-	// 		// const res = await createInstances(User, usersData);
-	// 		// console.log(res);
-	// 	});
+	let pongNum = 0;
+	const pongsData = data.reduce((acc, row, index) => {
+		const pong = row['A'];
+		const lastCall = row['H'];
+
+		if (index === 0) {
+			pongNum++;
+			acc.push({
+				name: pong,
+				number: pongNum,
+				lastCall: lastCall === 'Y',
+			});
+		}
+
+		if (index > 0 && data[index - 1]['A'] !== pong) {
+			pongNum++;
+			acc.push({
+				name: pong,
+				number: pongNum,
+				lastCall: lastCall === 'Y',
+			});
+		}
+		return acc;
+	}, []);
+
+	return db
+		.authenticate()
+		.then(() => db.sync({ force: true }))
+		.then(async () => {
+			console.log('Authenticated');
+			const res = await createInstances(Pong, pongsData);
+			console.log(res);
+		});
 };
 
 module.exports = syncAndSeed;
