@@ -76,7 +76,7 @@ const syncAndSeed = async () => {
 
 		let spotifyData = spotifyRes.artists.items[0];
 
-		if (spotifyData) {
+		if (spotifyData && spotifyData.name === artist) {
 			let { name, genres, followers, id, images, popularity } =
 				spotifyData;
 			followers = followers.total;
@@ -93,6 +93,52 @@ const syncAndSeed = async () => {
 
 		artistsData.push(artistObj);
 	}
+
+	pickNum = 1;
+	const pickedItemsDataPromises = data.slice(0, 5).map(async (row, index) => {
+		const currentPong = row['A'];
+		const currentArtist = row['B'];
+		const currentUser = row['D'];
+		const numSongs = row['E'];
+		const lastCall = row['I'];
+
+		if (index > 0) {
+			let previousPong = row['A'];
+			if (previousPong !== currentPong) {
+				pickNum = 1;
+			} else {
+				pickNum++;
+			}
+		}
+
+		const artistRes = await Artist.findByPk(currentArtist);
+		const artist = artistRes.dataValues;
+
+		const pongRes = await Pong.findAll({
+			where: {
+				name: currentPong,
+			},
+		});
+		const pong = pongRes[0].dataValues;
+
+		const userRes = await User.findAll({
+			where: {
+				username: currentUser,
+			},
+		});
+		const user = userRes[0].dataValues;
+
+		let pickedItem = {
+			lastCall: lastCall === 'Y',
+			numSongs,
+			pickNumber: pickNum,
+			userId: user.id,
+			pongId: pong.id,
+			artistId: artist.name,
+		};
+
+		return pickedItem;
+	});
 
 	return db
 		.authenticate()
@@ -116,7 +162,17 @@ const syncAndSeed = async () => {
 			try {
 				await createInstances(Artist, artistsData);
 			} catch (err) {
-				console.log('Error creating artits', err);
+				console.log('Error creating artist', err);
+			}
+		})
+		.then(async () => {
+			try {
+				const pickedItemsData = await Promise.all(
+					pickedItemsDataPromises
+				).then((data) => data);
+				await createInstances(PickedItem, pickedItemsData);
+			} catch (err) {
+				console.log('Error creating picked item', err);
 			}
 		});
 };

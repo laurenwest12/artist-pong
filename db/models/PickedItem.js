@@ -10,6 +10,10 @@ const PickedItem = db.define('pickedItem', {
 		type: Sequelize.INTEGER,
 		allowNull: false,
 	},
+	pickNumber: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+	},
 });
 
 module.exports = PickedItem;

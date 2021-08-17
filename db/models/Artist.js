@@ -8,6 +8,7 @@ const Artist = db.define('artist', {
 		validate: {
 			notEmpty: true,
 		},
+		primaryKey: true,
 	},
 	genres: {
 		type: Sequelize.ARRAY(Sequelize.TEXT),
