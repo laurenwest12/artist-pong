@@ -4,16 +4,12 @@ const session = require('express-session');
 const cors = require('cors');
 const axios = require('axios');
 const PORT = process.env.PORT || 8888;
+const dotenv = require('dotenv').config();
+
+const syncAndSeed = require('./db/seed');
+const { getSpotifyData } = require('./spotify/helperFunctions/spotifySearch');
 
 const auth = require('./routes/auth');
-
-const { getUsers, createUsers } = require('./db/User');
-const {
-	createPickedItems,
-	updatePickedItems,
-	deletePickedItems,
-	addPickedItems,
-} = require('./db/PickedItems');
 
 app.use(
 	session({
@@ -28,34 +24,38 @@ app.use(cors());
 
 app.use('/', auth);
 
-//Data that was stored in an Excel doc
-const excelToJson = require('convert-excel-to-json');
-const result = excelToJson({
-	sourceFile: './spreadsheetData.xlsx',
-});
-
 app.get('/', async (req, res) => {
-	// if (!req.session.access_token) {
-	// 	res.redirect('/login');
-	// } else {
-	// 	//Add authorization token to axios calls
-	// 	let token = req.session.access_token;
-	// 	axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+	if (!req.session.access_token) {
+		res.redirect('/login');
+	} else {
+		//Add authorization token to axios calls
+		let token = req.session.access_token;
+		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-	// 	res.send('Hello World');
-	// }
+		const artists = syncAndSeed();
+		const spotifyArtists = [];
+		const mismatchingArtists = [];
 
-	res.send(result['Sheet1'].slice(1));
+		for (let i = 0; i < artists.length; ++i) {
+			const artist = artists[i];
+			const spotifyArtistRes = await getSpotifyData(artist, 'artist');
+			const spotifyArtist = spotifyArtistRes.artists.items;
+			spotifyArtists.push(spotifyArtist);
+
+			if (spotifyArtist.length > 0 && spotifyArtist[0].name !== artist) {
+				mismatchingArtists.push({
+					excel: artist,
+					spotify: spotifyArtist[0].name,
+				});
+			}
+		}
+		res.send(mismatchingArtists);
+	}
+
+	//res.send(result['Sheet1'].slice(1));
 });
 
 app.listen(PORT, async () => {
 	console.log('App is listening...');
-	const data = result['Sheet1'].slice(1);
-	//await deletePickedItems();
-	//await createPickedItems(data);
-	await addPickedItems();
-	//await updateOtherCollections(data.slice(0, 1));
-	//await updatePickedItems(data.slice(0, 259));
-	// const pongNames = getPongNames(result['Sheet1']);
-	// const artistNames = getArtistNames(result['Sheet1']);
+	syncAndSeed();
 });

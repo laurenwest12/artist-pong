@@ -1,9 +1,14 @@
-const firebase = require('firebase');
-const { firebaseConfig } = require('../config');
-firebase.initializeApp(firebaseConfig);
+const Sequelize = require('sequelize');
 
-const db = firebase.firestore();
+const db = new Sequelize(
+	process.env.DB,
+	process.env.DB_USER,
+	process.env.DB_PASSWORD,
+	{
+		host: 'localhost',
+		dialect: 'postgres',
+		logging: false,
+	}
+);
 
-module.exports = {
-	db,
-};
+module.exports = db;
