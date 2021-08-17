@@ -27,19 +27,22 @@ const syncAndSeed = async () => {
 	const pongs = getUniqueValues('A');
 	const users = getUniqueValues('D');
 
-	const usersData = users.map((user) => {
-		return {
-			username: user,
-			password: 'Brooklyn1',
-		};
-	});
+	return artists;
+	// const usersData = users.map((user) => {
+	// 	return {
+	// 		username: user,
+	// 		password: 'Brooklyn1',
+	// 	};
+	// });
 
-	return db
-		.authenticate()
-		.then(() => db.sync({ force: true }))
-		.then(async () => {
-			console.log('Authenticated');
-		});
+	// return db
+	// 	.authenticate()
+	// 	.then(() => db.sync({ force: true }))
+	// 	.then(async () => {
+	// 		console.log('Authenticated');
+	// 		// const res = await createInstances(User, usersData);
+	// 		// console.log(res);
+	// 	});
 };
 
 module.exports = syncAndSeed;
