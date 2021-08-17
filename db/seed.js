@@ -20,13 +20,14 @@ const syncAndSeed = () => {
 	const artists = getUniqueValues('B');
 	const pongs = getUniqueValues('A');
 	const users = getUniqueValues('D');
+	console.log(users);
 	//return artists;
-	return db
-		.authenticate()
-		.then(() => db.sync({ force: true }))
-		.then(() => {
-			console.log('authenticated');
-		});
+	// return db
+	// 	.authenticate()
+	// 	.then(() => db.sync({ force: true }))
+	// 	.then(() => {
+	// 		console.log('authenticated');
+	// 	});
 };
 
 module.exports = syncAndSeed;
