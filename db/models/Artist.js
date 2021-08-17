@@ -9,7 +9,7 @@ const Artist = db.define('artist', {
 			notEmpty: true,
 		},
 	},
-	genre: {
+	genres: {
 		type: Sequelize.ARRAY(Sequelize.TEXT),
 		allowNull: false,
 		defaultValue: [],
@@ -25,7 +25,7 @@ const Artist = db.define('artist', {
 		defaultValue: '',
 	},
 	images: {
-		type: Sequelize.ARRAY(Sequelize.STRING),
+		type: Sequelize.ARRAY(Sequelize.JSON),
 	},
 	popularity: {
 		type: Sequelize.INTEGER,
