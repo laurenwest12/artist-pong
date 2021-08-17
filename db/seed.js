@@ -1,5 +1,7 @@
-const excelToJson = require('convert-excel-to-json');
 const db = require('./db');
+const { Artist, PickedItem, Pong, User } = require('./models/index');
+
+const excelToJson = require('convert-excel-to-json');
 const result = excelToJson({
 	sourceFile: './spreadsheetData.xlsx',
 });
@@ -16,18 +18,28 @@ const getUniqueValues = (column) => {
 	}, []);
 };
 
-const syncAndSeed = () => {
+const createInstances = (model, data) => {
+	return Promise.all(data.map((instance) => model.create(instance)));
+};
+
+const syncAndSeed = async () => {
 	const artists = getUniqueValues('B');
 	const pongs = getUniqueValues('A');
 	const users = getUniqueValues('D');
-	console.log(users);
-	//return artists;
-	// return db
-	// 	.authenticate()
-	// 	.then(() => db.sync({ force: true }))
-	// 	.then(() => {
-	// 		console.log('authenticated');
-	// 	});
+
+	const usersData = users.map((user) => {
+		return {
+			username: user,
+			password: 'Brooklyn1',
+		};
+	});
+
+	return db
+		.authenticate()
+		.then(() => db.sync({ force: true }))
+		.then(async () => {
+			console.log('Authenticated');
+		});
 };
 
 module.exports = syncAndSeed;
