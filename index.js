@@ -6,9 +6,15 @@ const axios = require('axios');
 const PORT = process.env.PORT || 8888;
 const dotenv = require('dotenv').config();
 
+//Db syncing functions
 const { syncAndSeed, dbSync } = require('./db/seed');
 
+//Helper functions
+const isLoggedIn = require('./utils/isLoggedIn');
+
+//Routes
 const auth = require('./routes/auth');
+const artists = require('./routes/artists');
 
 app.use(
 	session({
@@ -22,6 +28,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use('/', auth);
+app.use('/', isLoggedIn);
+app.use('/api/artists', artists);
 
 app.get('/', async (req, res) => {
 	if (!req.session.access_token) {
