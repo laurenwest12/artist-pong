@@ -30,7 +30,6 @@ app.get('/', async (req, res) => {
 		//Add authorization token to axios calls
 		let token = req.session.access_token;
 		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-		await syncAndSeed();
 		res.send('Hello world');
 	}
 });

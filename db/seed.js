@@ -23,6 +23,70 @@ const createInstances = (model, data) => {
 	return Promise.all(data.map((instance) => model.create(instance)));
 };
 
+const addPickedNumber = () => {
+	let pickNum = 1;
+	data.forEach((row, index) => {
+		if (index === 0) {
+			row['J'] = pickNum;
+			pickNum++;
+		} else {
+			let previousRow = data[index - 1];
+			let currentPong = row['A'];
+			let previousPong = previousRow['A'];
+			if (currentPong !== previousPong) {
+				pickNum = 1;
+			}
+			row['J'] = pickNum;
+			pickNum++;
+		}
+	});
+};
+
+const getPickedItems = async () => {
+	addPickedNumber();
+	const pickedItemsDataPromises = data.map(async (row) => {
+		const currentPong = row['A'];
+		const currentArtist = row['B'];
+		const currentUser = row['D'];
+		const numSongs = row['E'];
+		const lastCall = row['I'];
+		const pickNum = row['J'];
+
+		const artistRes = await Artist.findByPk(currentArtist);
+		const artist = artistRes.dataValues;
+
+		const pongRes = await Pong.findAll({
+			where: {
+				name: currentPong,
+			},
+		});
+		const pong = pongRes[0].dataValues;
+
+		const userRes = await User.findAll({
+			where: {
+				username: currentUser,
+			},
+		});
+		const user = userRes[0].dataValues;
+
+		let pickedItem = {
+			lastCall: lastCall === 'Y',
+			numSongs,
+			pickNumber: pickNum,
+			artistName: artist.name,
+			pongId: pong.id,
+			userId: user.id,
+		};
+
+		return pickedItem;
+	});
+
+	const pickedItemsData = await Promise.all(pickedItemsDataPromises).then(
+		(data) => data
+	);
+	return pickedItemsData;
+};
+
 const syncAndSeed = async () => {
 	const artists = getUniqueValues('B');
 	const users = getUniqueValues('D');
@@ -94,86 +158,22 @@ const syncAndSeed = async () => {
 		artistsData.push(artistObj);
 	}
 
-	pickNum = 1;
-	const pickedItemsDataPromises = data.slice(0, 5).map(async (row, index) => {
-		const currentPong = row['A'];
-		const currentArtist = row['B'];
-		const currentUser = row['D'];
-		const numSongs = row['E'];
-		const lastCall = row['I'];
-
-		if (index > 0) {
-			let previousPong = row['A'];
-			if (previousPong !== currentPong) {
-				pickNum = 1;
-			} else {
-				pickNum++;
-			}
-		}
-
-		const artistRes = await Artist.findByPk(currentArtist);
-		const artist = artistRes.dataValues;
-
-		const pongRes = await Pong.findAll({
-			where: {
-				name: currentPong,
-			},
-		});
-		const pong = pongRes[0].dataValues;
-
-		const userRes = await User.findAll({
-			where: {
-				username: currentUser,
-			},
-		});
-		const user = userRes[0].dataValues;
-
-		let pickedItem = {
-			lastCall: lastCall === 'Y',
-			numSongs,
-			pickNumber: pickNum,
-			userId: user.id,
-			pongId: pong.id,
-			artistId: artist.name,
-		};
-
-		return pickedItem;
-	});
-
 	return db
 		.authenticate()
-		.then(() => db.sync({ force: true }))
+		.then(() => db.sync({ force: false }))
 		.then(async () => {
 			console.log('Authenticated');
-			try {
-				await createInstances(User, usersData);
-			} catch (err) {
-				console.log('Error creating users', err);
-			}
+			return createInstances(User, usersData);
 		})
 		.then(async () => {
-			try {
-				await createInstances(Pong, pongsData);
-			} catch (err) {
-				console.log('Error creating pongs', err);
-			}
+			return createInstances(Pong, pongsData);
 		})
 		.then(async () => {
-			try {
-				await createInstances(Artist, artistsData);
-			} catch (err) {
-				console.log('Error creating artist', err);
-			}
+			return createInstances(Artist, artistsData);
 		})
 		.then(async () => {
-			try {
-				const pickedItemsData = await Promise.all(
-					pickedItemsDataPromises
-				).then((data) => data);
-				await createInstances(PickedItem, pickedItemsData);
-			} catch (err) {
-				console.log('Error creating picked item', err);
-			}
+			const pickedItems = await getPickedItems();
+			return createInstances(PickedItem, pickedItems);
 		});
 };
 

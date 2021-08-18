@@ -10,7 +10,7 @@ Pong.hasMany(PickedItem);
 PickedItem.belongsTo(Pong);
 
 User.hasMany(PickedItem);
-PickedItem.belongsTo(Pong);
+PickedItem.belongsTo(User);
 
 module.exports = {
 	Artist,
