@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { response } = require('express');
 const request = require('request');
 const { client_id, redirect_uri, client_secret, scope } = require('../config');
 
