@@ -15,6 +15,9 @@ const isLoggedIn = require('./utils/isLoggedIn');
 //Routes
 const auth = require('./routes/auth');
 const artists = require('./routes/artists');
+const pickedItems = require('./routes/pickedItems');
+const pongs = require('./routes/pongs');
+const users = require('./routes/users');
 
 app.use(
 	session({
@@ -28,8 +31,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use('/', auth);
-app.use('/', isLoggedIn);
+//app.use('/', isLoggedIn);
 app.use('/api/artists', artists);
+app.use('/api/pickedItems', pickedItems);
+app.use('/api/pongs', pongs);
+app.use('/api/users', users);
 
 app.get('/', async (req, res) => {
 	if (!req.session.access_token) {
