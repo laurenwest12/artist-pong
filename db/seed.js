@@ -177,4 +177,11 @@ const syncAndSeed = async () => {
 		});
 };
 
-module.exports = syncAndSeed;
+const dbSync = () => {
+	return db.authenticate().then(() => db.sync({ force: false }));
+};
+
+module.exports = {
+	syncAndSeed,
+	dbSync,
+};

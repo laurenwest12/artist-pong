@@ -6,7 +6,7 @@ const axios = require('axios');
 const PORT = process.env.PORT || 8888;
 const dotenv = require('dotenv').config();
 
-const syncAndSeed = require('./db/seed');
+const { syncAndSeed, dbSync } = require('./db/seed');
 
 const auth = require('./routes/auth');
 
@@ -34,6 +34,8 @@ app.get('/', async (req, res) => {
 	}
 });
 
-app.listen(PORT, async () => {
-	console.log('App is listening...');
-});
+dbSync().then(() =>
+	app.listen(PORT, async () => {
+		console.log('App is listening...');
+	})
+);
