@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getArtistsThunk, sortArtistsThunk } from '../redux/artists';
-
-// const sortArtists = (arr, type) => {
-// 	return arr.sort
-// }
+import { getPickedItemsThunk } from '../redux/pickedItems';
+import { getPongsThunk } from '../redux/pongs';
 
 class Artists extends Component {
 	constructor() {
@@ -16,13 +14,18 @@ class Artists extends Component {
 	}
 
 	async componentDidMount() {
-		const { getArtists } = this.props;
+		const { getArtists, getPickedItems, getPongs } = this.props;
 		await getArtists();
+		await getPickedItems();
+		await getPongs();
 	}
 
 	render() {
-		const { artists, sortArtists } = this.props;
-		console.log(this.state);
+		const { artists, pickedItems, pongs, sortArtists } = this.props;
+
+		const getPongName = (id) => {
+			return pongs.find((pong) => pong.id === id).name;
+		};
 
 		return (
 			<div className="artists">
@@ -53,7 +56,21 @@ class Artists extends Component {
 					SORT BY NAME
 				</button>
 				{artists.length &&
-					artists.map((artist) => <div>{artist.name}</div>)}
+					artists.map((artist) => (
+						<div key={artist.name}>
+							{artist.name}
+							<div>
+								{pickedItems
+									.filter(
+										(item) =>
+											item.artistName === artist.name
+									)
+									.map((item) => (
+										<div>{getPongName(item.pongId)}</div>
+									))}
+							</div>
+						</div>
+					))}
 			</div>
 		);
 	}
@@ -62,6 +79,8 @@ class Artists extends Component {
 const mapStateToProps = (state) => {
 	return {
 		artists: state.artists,
+		pickedItems: state.pickedItems,
+		pongs: state.pongs,
 	};
 };
 
@@ -69,6 +88,8 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		getArtists: () => dispatch(getArtistsThunk()),
 		sortArtists: (type, order) => dispatch(sortArtistsThunk(type, order)),
+		getPickedItems: () => dispatch(getPickedItemsThunk()),
+		getPongs: () => dispatch(getPongsThunk()),
 	};
 };
 
