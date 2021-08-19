@@ -1,7 +1,10 @@
 export const sortArtists = (key, order) => {
 	return function innerSort(a, b) {
-		const varA = typeof a[key] === 'string' ? a[key].toUpperCase() : a[key];
-		const varB = typeof b[key] === 'string' ? b[key].toUpperCase() : b[key];
+		let varA = typeof a[key] === 'string' ? a[key].toUpperCase() : a[key];
+		let varB = typeof b[key] === 'string' ? b[key].toUpperCase() : b[key];
+
+		varA = Array.isArray(a[key]) ? a[key].length : a[key];
+		varB = Array.isArray(b[key]) ? b[key].length : b[key];
 
 		let comparison = 0;
 		if (varA > varB) {

@@ -16,25 +16,15 @@ const getArtists = (artists) => ({
 export const getArtistsThunk = () => {
 	return (dispatch) => {
 		axios
-			.get('/api/artists')
+			.get('/api/artists/pickedItems')
 			.then(({ data }) => dispatch(getArtists(data)));
 	};
 };
 
 export const sortArtistsThunk = (type, order) => {
 	return (dispatch) => {
-		axios.get('/api/artists').then(({ data }) => {
+		axios.get('/api/artists/pickedItems').then(({ data }) => {
 			let artists = data.sort(sortArtists(type, order));
-			// if (type === 'popularity') {
-			// 	if (order === 'asc') {
-			// 		artists = data.sort(sortPopularity);
-			// 	} else {
-			// 		artists = data.sort(sortPopularityDesc);
-			// 	}
-			// }
-			// if (type === 'name') {
-			// 	artists = data.sort(sortName);
-			// }
 			return dispatch(getArtists(artists));
 		});
 	};
