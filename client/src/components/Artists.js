@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { sortArtists } from '../helperFunctions/sort';
 import { getArtistsThunk, sortArtistsThunk } from '../redux/artists';
 import { getPickedItemsThunk } from '../redux/pickedItems';
 import { getPongsThunk } from '../redux/pongs';
@@ -18,9 +17,7 @@ class Artists extends Component {
 	}
 
 	async componentDidMount() {
-		const { getArtists, getPickedItems, getPongs, sortArtists } =
-			this.props;
-		//await getArtists();
+		const { getPickedItems, getPongs, sortArtists } = this.props;
 		await getPickedItems();
 		await getPongs();
 		await sortArtists('pickedItems', false);
