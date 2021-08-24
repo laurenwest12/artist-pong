@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { sortArtists } from '../helperFunctions/sort';
 import { getArtistsThunk, sortArtistsThunk } from '../redux/artists';
 import { getPickedItemsThunk } from '../redux/pickedItems';
 import { getPongsThunk } from '../redux/pongs';
@@ -8,9 +9,11 @@ class Artists extends Component {
 	constructor() {
 		super();
 		this.state = {
-			popSort: 'desc',
-			nameSort: 'asc',
-			usedSort: 'desc',
+			// true = asc, false = desc
+			popularity: true,
+			name: false,
+			pickedItems: true,
+			lastCall: true,
 		};
 	}
 
@@ -24,6 +27,19 @@ class Artists extends Component {
 	render() {
 		const { artists, pickedItems, pongs, sortArtists } = this.props;
 
+		const handleSort = (type, order) => {
+			sortArtists(type, order);
+			let defaultState = {
+				popularity: true,
+				name: false,
+				pickedItems: true,
+				lastCall: true,
+			};
+
+			defaultState[type] = order;
+			this.setState(defaultState);
+		};
+
 		return (
 			artists.length &&
 			pongs.length &&
@@ -33,18 +49,58 @@ class Artists extends Component {
 						type="button"
 						className="sort"
 						onClick={() => {
-							sortArtists('pickedItems', this.state.usedSort);
+							handleSort('pickedItems', !this.state.pickedItems);
+						}}
+					>
+						SORT BY TIMES USED
+					</button>
+
+					<button
+						type="button"
+						className="sort"
+						onClick={() => {
+							handleSort('lastCall', !this.state.lastCall);
+						}}
+					>
+						SORT BY LAST CALL
+					</button>
+
+					<button
+						type="button"
+						className="sort"
+						onClick={() => {
+							handleSort('popularity', !this.state.popularity);
+						}}
+					>
+						SORT BY POPULARITY
+					</button>
+
+					<button
+						type="button"
+						className="sort"
+						onClick={() => {
+							handleSort('name', !this.state.name);
+						}}
+					>
+						SORT BY NAME
+					</button>
+					{/* <button
+						type="button"
+						className="sort"
+						onClick={() => {
+							sortArtists('lastCall', this.state.lastCallSort);
 							this.setState({
-								usedSort:
-									this.state.usedSort === 'asc'
+								lastCallSort:
+									this.state.lastCallSort === 'asc'
 										? 'desc'
 										: 'asc',
+								usedSort: 'desc',
 								popSort: 'desc',
 								nameSort: 'asc',
 							});
 						}}
 					>
-						SORT BY TIMES USED
+						SORT BY LAST CALL
 					</button>
 					<button
 						type="button"
@@ -58,6 +114,7 @@ class Artists extends Component {
 										: 'asc',
 								usedSort: 'desc',
 								nameSort: 'asc',
+								lastCallSort: 'desc',
 							});
 						}}
 					>
@@ -75,11 +132,12 @@ class Artists extends Component {
 										: 'asc',
 								popSort: 'desc',
 								usedSort: 'desc',
+								lastCallSort: 'desc',
 							});
 						}}
 					>
 						SORT BY NAME
-					</button>
+					</button> */}
 
 					<div className="artists">
 						{artists.length &&

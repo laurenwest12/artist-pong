@@ -23,10 +23,47 @@ export const getArtistsThunk = () => {
 
 export const sortArtistsThunk = (type, order) => {
 	return (dispatch) => {
-		axios.get('/api/artists/pickedItems').then(({ data }) => {
-			let artists = data.sort(sortArtists(type, order));
-			return dispatch(getArtists(artists));
-		});
+		if (type === 'pickedItems' || type === 'lastCall') {
+			axios.get('/api/artists/pickedItems').then(({ data }) => {
+				let artists;
+				if (type === 'lastCall') {
+					const lastCallData = data.reduce((acc, artist) => {
+						const {
+							name,
+							genres,
+							followers,
+							spotifyId,
+							images,
+							popularity,
+							pickedItems,
+						} = artist;
+						const lastCall = pickedItems.filter(
+							(item) => item.lastCall
+						).length;
+						acc.push({
+							name,
+							genres,
+							followers,
+							spotifyId,
+							images,
+							popularity,
+							pickedItems,
+							lastCall,
+						});
+						return acc;
+					}, []);
+					artists = lastCallData.sort(sortArtists(type, order));
+				} else {
+					artists = data.sort(sortArtists(type, order));
+				}
+				return dispatch(getArtists(artists));
+			});
+		} else {
+			axios.get('/api/artists/pickedItems').then(({ data }) => {
+				let artists = data.sort(sortArtists(type, order));
+				return dispatch(getArtists(artists));
+			});
+		}
 	};
 };
 

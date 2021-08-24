@@ -12,6 +12,6 @@ export const sortArtists = (key, order) => {
 		} else if (varA < varB) {
 			comparison = -1;
 		}
-		return order === 'desc' ? comparison * -1 : comparison;
+		return !order ? comparison * -1 : comparison;
 	};
 };
