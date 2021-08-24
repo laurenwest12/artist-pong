@@ -12,16 +12,18 @@ class Artists extends Component {
 			// true = asc, false = desc
 			popularity: true,
 			name: false,
-			pickedItems: true,
+			pickedItems: false,
 			lastCall: true,
 		};
 	}
 
 	async componentDidMount() {
-		const { getArtists, getPickedItems, getPongs } = this.props;
-		await getArtists();
+		const { getArtists, getPickedItems, getPongs, sortArtists } =
+			this.props;
+		//await getArtists();
 		await getPickedItems();
 		await getPongs();
+		await sortArtists('pickedItems', false);
 	}
 
 	render() {
@@ -84,60 +86,6 @@ class Artists extends Component {
 					>
 						SORT BY NAME
 					</button>
-					{/* <button
-						type="button"
-						className="sort"
-						onClick={() => {
-							sortArtists('lastCall', this.state.lastCallSort);
-							this.setState({
-								lastCallSort:
-									this.state.lastCallSort === 'asc'
-										? 'desc'
-										: 'asc',
-								usedSort: 'desc',
-								popSort: 'desc',
-								nameSort: 'asc',
-							});
-						}}
-					>
-						SORT BY LAST CALL
-					</button>
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							sortArtists('popularity', this.state.popSort);
-							this.setState({
-								popSort:
-									this.state.popSort === 'asc'
-										? 'desc'
-										: 'asc',
-								usedSort: 'desc',
-								nameSort: 'asc',
-								lastCallSort: 'desc',
-							});
-						}}
-					>
-						SORT BY POPULARITY
-					</button>
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							sortArtists('name', this.state.nameSort);
-							this.setState({
-								nameSort:
-									this.state.nameSort === 'asc'
-										? 'desc'
-										: 'asc',
-								popSort: 'desc',
-								usedSort: 'desc',
-								lastCallSort: 'desc',
-							});
-						}}
-					>
-						SORT BY NAME
-					</button> */}
 
 					<div className="artists">
 						{artists.length &&
