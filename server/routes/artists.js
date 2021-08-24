@@ -22,11 +22,23 @@ router.get('/pickedItems', async (req, res) => {
 		});
 
 		let lastCall = pickedItems.filter((item) => item.lastCall);
+		let avgSongs =
+			pickedItems.reduce((acc, item) => {
+				acc += item.numSongs;
+				return acc;
+			}, 0) / pickedItems.length;
+		let avgPick =
+			pickedItems.reduce((acc, item) => {
+				acc += item.pickNumber;
+				return acc;
+			}, 0) / pickedItems.length;
 
 		artistsPickedItems.push({
 			...artist,
 			pickedItems,
 			lastCall,
+			avgSongs,
+			avgPick,
 		});
 	}
 	res.send(artistsPickedItems);

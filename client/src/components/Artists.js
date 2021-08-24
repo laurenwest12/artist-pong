@@ -11,8 +11,10 @@ class Artists extends Component {
 			// true = asc, false = desc
 			popularity: true,
 			name: false,
-			pickedItems: false,
+			pickedItems: true,
 			lastCall: true,
+			avgSongs: true,
+			avgPick: false,
 		};
 	}
 
@@ -33,6 +35,8 @@ class Artists extends Component {
 				name: false,
 				pickedItems: true,
 				lastCall: true,
+				avgSongs: true,
+				avgPick: false,
 			};
 
 			defaultState[type] = order;
@@ -62,6 +66,26 @@ class Artists extends Component {
 						}}
 					>
 						SORT BY LAST CALL
+					</button>
+
+					<button
+						type="button"
+						className="sort"
+						onClick={() => {
+							handleSort('avgSongs', !this.state.avgSongs);
+						}}
+					>
+						SORT BY AVERAGE # SONGS
+					</button>
+
+					<button
+						type="button"
+						className="sort"
+						onClick={() => {
+							handleSort('avgPick', !this.state.avgPick);
+						}}
+					>
+						SORT BY AVERAGE PICK
 					</button>
 
 					<button
@@ -122,6 +146,13 @@ class Artists extends Component {
 													item.lastCall
 											).length
 										}
+										<br />
+										Average Number of Songs:{' '}
+										{Math.round(100 * artist.avgSongs) /
+											100}
+										<br />
+										Average Pick Number:{' '}
+										{Math.round(100 * artist.avgPick) / 100}
 										<br />
 										Spotify Popularity: {artist.popularity}
 									</div>
