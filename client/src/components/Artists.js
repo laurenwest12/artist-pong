@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getArtistsThunk, sortArtistsThunk } from '../redux/artists';
+import {
+	getArtistsThunk,
+	sortArtistsThunk,
+	filterArtistsThunk,
+} from '../redux/artists';
 import { getPickedItemsThunk } from '../redux/pickedItems';
 import { getPongsThunk } from '../redux/pongs';
 
@@ -26,7 +30,8 @@ class Artists extends Component {
 	}
 
 	render() {
-		const { artists, pickedItems, pongs, sortArtists } = this.props;
+		const { artists, pickedItems, pongs, sortArtists, filterArtists } =
+			this.props;
 
 		const handleSort = (type, order) => {
 			sortArtists(type, order);
@@ -177,6 +182,7 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		getArtists: () => dispatch(getArtistsThunk()),
 		sortArtists: (type, order) => dispatch(sortArtistsThunk(type, order)),
+		filterArtists: (obj) => dispatch(filterArtistsThunk(obj)),
 		getPickedItems: () => dispatch(getPickedItemsThunk()),
 		getPongs: () => dispatch(getPongsThunk()),
 	};

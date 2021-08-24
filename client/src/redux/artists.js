@@ -1,10 +1,12 @@
 import axios from 'axios';
+import queryString from 'query-string';
 
 import { sortArtists } from '../helperFunctions/sort';
 
 //constants
 const GET_ARTISTS = 'GET_ARTISTS';
-const SORT_ARTISTS = 'SORT_ARTISTS';
+// const SORT_ARTISTS = 'SORT_ARTISTS';
+// const FILTER_ARTISTS = 'FILTER_ARTISTS';
 
 //action creators
 const getArtists = (artists) => ({
@@ -67,13 +69,22 @@ export const sortArtistsThunk = (type, order) => {
 	};
 };
 
+export const filterArtistsThunk = (obj) => {
+	return (dispatch) => {
+		const url = queryString.stringify(obj);
+		axios.get(`/api/artists/filtered/?${url}`).then(({ data }) => {
+			return dispatch(getArtists(data));
+		});
+	};
+};
+
 //reducer
 export const artists = (state = [], action) => {
 	switch (action.type) {
 		case GET_ARTISTS:
 			return action.artists;
-		case SORT_ARTISTS:
-			return action.artists;
+		// case SORT_ARTISTS:
+		// 	return action.artists;
 		default:
 			return state;
 	}
