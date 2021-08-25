@@ -4,45 +4,45 @@ const { sortArtists } = require('../utils/sort');
 const { Artist, PickedItem } = require('../db/models/index');
 
 router.get('/', async (req, res) => {
-	const artists = await Artist.findAll();
-	const sortedArtists = artists.sort(sortArtists('name', true));
-	res.send(artists);
-});
+	const artistsRes = await Artist.findAll({
+		include: PickedItem,
+	});
+	const sortedArtists = artistsRes.sort(sortArtists('name', true));
 
-router.get('/pickedItems', async (req, res) => {
-	const artists = await Artist.findAll();
-	const sortedArtists = artists.sort(sortArtists('name', true));
-	let artistsPickedItems = [];
-
+	let artists = [];
 	for (let i = 0; i < sortedArtists.length; ++i) {
 		let artist = sortedArtists[i].dataValues;
-		let pickedItems = await PickedItem.findAll({
-			where: {
-				artistName: artist.name,
-			},
-		});
-
+		let pickedItems = artist.pickedItems.map((item) => item.dataValues);
 		let lastCall = pickedItems.filter((item) => item.lastCall);
 		let avgSongs =
-			pickedItems.reduce((acc, item) => {
-				acc += item.numSongs;
-				return acc;
-			}, 0) / pickedItems.length;
+			Math.round(
+				(100 *
+					pickedItems.reduce((acc, item) => {
+						acc += item.numSongs;
+						return acc;
+					}, 0)) /
+					pickedItems.length
+			) / 100;
 		let avgPick =
-			pickedItems.reduce((acc, item) => {
-				acc += item.pickNumber;
-				return acc;
-			}, 0) / pickedItems.length;
-
-		artistsPickedItems.push({
+			Math.round(
+				(100 *
+					pickedItems.reduce((acc, item) => {
+						acc += item.pickNumber;
+						return acc;
+					}, 0)) /
+					pickedItems.length
+			) / 100;
+		let shared = pickedItems.filter((item) => item.userId === 5).length;
+		artist.pickedItems = pickedItems;
+		artists.push({
 			...artist,
-			pickedItems,
-			lastCall,
 			avgSongs,
 			avgPick,
+			shared,
 		});
 	}
-	res.send(artistsPickedItems);
+
+	res.send(artists);
 });
 
 router.get('/filtered?', async (req, res) => {
@@ -60,41 +60,10 @@ router.get('/filtered?', async (req, res) => {
 		where: {
 			[Op.or]: artistsParams,
 		},
+		include: PickedItem,
 	});
 
-	const sortedArtists = artists.sort(sortArtists('name', true));
-	let artistsPickedItems = [];
-
-	for (let i = 0; i < sortedArtists.length; ++i) {
-		let artist = sortedArtists[i].dataValues;
-		let pickedItems = await PickedItem.findAll({
-			where: {
-				artistName: artist.name,
-			},
-		});
-
-		let lastCall = pickedItems.filter((item) => item.lastCall);
-		let avgSongs =
-			pickedItems.reduce((acc, item) => {
-				acc += item.numSongs;
-				return acc;
-			}, 0) / pickedItems.length;
-		let avgPick =
-			pickedItems.reduce((acc, item) => {
-				acc += item.pickNumber;
-				return acc;
-			}, 0) / pickedItems.length;
-
-		artistsPickedItems.push({
-			...artist,
-			pickedItems,
-			lastCall,
-			avgSongs,
-			avgPick,
-		});
-	}
-
-	res.send(artistsPickedItems);
+	res.send(artists);
 });
 
 router.get('/:id', async (req, res) => {

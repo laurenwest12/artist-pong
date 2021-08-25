@@ -5,8 +5,6 @@ import { sortArtists } from '../helperFunctions/sort';
 
 //constants
 const GET_ARTISTS = 'GET_ARTISTS';
-// const SORT_ARTISTS = 'SORT_ARTISTS';
-// const FILTER_ARTISTS = 'FILTER_ARTISTS';
 
 //action creators
 const getArtists = (artists) => ({
@@ -18,7 +16,7 @@ const getArtists = (artists) => ({
 export const getArtistsThunk = () => {
 	return (dispatch) => {
 		axios
-			.get('/api/artists/pickedItems')
+			.get('/api/artists')
 			.then(({ data }) => dispatch(getArtists(data)));
 	};
 };
@@ -26,7 +24,7 @@ export const getArtistsThunk = () => {
 export const sortArtistsThunk = (type, order) => {
 	return (dispatch) => {
 		if (type === 'pickedItems' || type === 'lastCall') {
-			axios.get('/api/artists/pickedItems').then(({ data }) => {
+			axios.get('/api/artists').then(({ data }) => {
 				let artists;
 				if (type === 'lastCall') {
 					const lastCallData = data.reduce((acc, artist) => {
@@ -61,7 +59,7 @@ export const sortArtistsThunk = (type, order) => {
 				return dispatch(getArtists(artists));
 			});
 		} else {
-			axios.get('/api/artists/pickedItems').then(({ data }) => {
+			axios.get('/api/artists').then(({ data }) => {
 				let artists = data.sort(sortArtists(type, order));
 				return dispatch(getArtists(artists));
 			});
@@ -83,8 +81,6 @@ export const artists = (state = [], action) => {
 	switch (action.type) {
 		case GET_ARTISTS:
 			return action.artists;
-		// case SORT_ARTISTS:
-		// 	return action.artists;
 		default:
 			return state;
 	}

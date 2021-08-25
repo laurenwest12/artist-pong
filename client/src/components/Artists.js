@@ -19,6 +19,7 @@ class Artists extends Component {
 			lastCall: true,
 			avgSongs: true,
 			avgPick: false,
+			shared: true,
 		};
 	}
 
@@ -42,6 +43,7 @@ class Artists extends Component {
 				lastCall: true,
 				avgSongs: true,
 				avgPick: false,
+				shared: true,
 			};
 
 			defaultState[type] = order;
@@ -91,6 +93,16 @@ class Artists extends Component {
 						}}
 					>
 						SORT BY AVERAGE PICK
+					</button>
+
+					<button
+						type="button"
+						className="sort"
+						onClick={() => {
+							handleSort('shared', !this.state.shared);
+						}}
+					>
+						SORT BY TIMES SHARED
 					</button>
 
 					<button
@@ -153,11 +165,11 @@ class Artists extends Component {
 										}
 										<br />
 										Average Number of Songs:{' '}
-										{Math.round(100 * artist.avgSongs) /
-											100}
+										{artist.avgSongs}
 										<br />
-										Average Pick Number:{' '}
-										{Math.round(100 * artist.avgPick) / 100}
+										Times Shared: {artist.shared}
+										<br />
+										Average Pick Number: {artist.avgPick}
 										<br />
 										Spotify Popularity: {artist.popularity}
 									</div>
