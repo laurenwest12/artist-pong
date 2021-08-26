@@ -10,6 +10,7 @@ import {
 import { getArtistNamesThunk } from '../redux/artistNames';
 import { getPickedItemsThunk } from '../redux/pickedItems';
 import { getPongsThunk } from '../redux/pongs';
+import { getUsersThunk } from '../redux/users';
 
 class Artists extends Component {
 	constructor() {
@@ -23,17 +24,24 @@ class Artists extends Component {
 			avgSongs: true,
 			avgPick: false,
 			shared: true,
-			filter: [],
+			artistFilter: [],
+			userFilter: [],
 		};
 	}
 
 	async componentDidMount() {
-		const { getPickedItems, getPongs, sortArtists, getArtistNames } =
-			this.props;
+		const {
+			getPickedItems,
+			getPongs,
+			sortArtists,
+			getArtistNames,
+			getUsers,
+		} = this.props;
 		await getPickedItems();
 		await getPongs();
 		await sortArtists('pickedItems', false);
 		await getArtistNames();
+		await getUsers();
 	}
 
 	render() {
@@ -44,9 +52,10 @@ class Artists extends Component {
 			pongs,
 			sortArtists,
 			filterArtists,
+			users,
 		} = this.props;
 
-		const names =
+		const artistsFilter =
 			artistNames &&
 			artistNames.map((artist) => ({
 				type: 'name',
@@ -54,8 +63,16 @@ class Artists extends Component {
 				value: artist,
 			}));
 
+		const usersFilter =
+			users &&
+			users.map((user) => ({
+				type: 'user',
+				label: user.username,
+				value: user.id,
+			}));
+
 		const handleSort = (type, order) => {
-			sortArtists(type, order, this.state.filter);
+			sortArtists(type, order, this.state.artistFilter);
 
 			let defaultState = {
 				popularity: true,
@@ -71,15 +88,26 @@ class Artists extends Component {
 			this.setState(defaultState);
 		};
 
-		const handleFilter = (event) => {
-			this.setState(
-				{
-					filter: event,
-				},
-				() => {
-					filterArtists(this.state.filter);
-				}
-			);
+		const handleFilter = (type) => (event) => {
+			if (type === 'artist') {
+				this.setState(
+					{
+						artistFilter: event,
+					},
+					() => {
+						filterArtists(this.state);
+					}
+				);
+			} else if (type === 'user') {
+				this.setState(
+					{
+						userFilter: event,
+					},
+					() => {
+						filterArtists(this.state);
+					}
+				);
+			}
 		};
 
 		return (
@@ -162,8 +190,14 @@ class Artists extends Component {
 					<div className="filter">
 						<Select
 							isMulti
-							options={names}
-							onChange={handleFilter}
+							options={artistsFilter}
+							onChange={handleFilter('artist')}
+						/>
+
+						<Select
+							isMulti
+							options={usersFilter}
+							onChange={handleFilter('user')}
 						/>
 					</div>
 					<div className="artists">
@@ -229,6 +263,7 @@ const mapStateToProps = (state) => {
 		artistNames: state.artistNames,
 		pickedItems: state.pickedItems,
 		pongs: state.pongs,
+		users: state.users,
 	};
 };
 
@@ -241,6 +276,7 @@ const mapDispatchToProps = (dispatch) => {
 		filterArtists: (obj) => dispatch(filterArtistsThunk(obj)),
 		getPickedItems: () => dispatch(getPickedItemsThunk()),
 		getPongs: () => dispatch(getPongsThunk()),
+		getUsers: () => dispatch(getUsersThunk()),
 	};
 };
 

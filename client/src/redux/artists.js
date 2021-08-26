@@ -74,9 +74,9 @@ export const sortArtistsThunk = (type, order, filter) => {
 	};
 };
 
-export const filterArtistsThunk = (arr) => {
+export const filterArtistsThunk = (obj) => {
 	return (dispatch) => {
-		const url = getFilterUrl(arr);
+		const url = getFilterUrl(obj);
 		axios.get(url).then(({ data }) => {
 			return dispatch(getArtists(data));
 		});
