@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
-import Input from '@material-ui/core/Input';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Chip from '@material-ui/core/Chip';
+import MultiSelect from 'react-multi-select-component';
 
 import {
 	getArtistsThunk,
@@ -28,7 +22,7 @@ class Artists extends Component {
 			avgSongs: true,
 			avgPick: false,
 			shared: true,
-			personName: [],
+			selected: [],
 		};
 	}
 
@@ -43,8 +37,10 @@ class Artists extends Component {
 		const { artists, pickedItems, pongs, sortArtists, filterArtists } =
 			this.props;
 
-		const names = artists.map((artist) => artist.name);
-		const testData = ['Little Mix', 'Kehlani'];
+		const names = artists.map((artist) => ({
+			label: artist.name,
+			value: artist.name,
+		}));
 
 		const handleSort = (type, order) => {
 			sortArtists(type, order);
@@ -62,9 +58,9 @@ class Artists extends Component {
 			this.setState(defaultState);
 		};
 
-		const handleFilter = ({ target }) => {
+		const handleFilter = (event) => {
 			this.setState({
-				personName: target.value,
+				selected: event,
 			});
 		};
 
@@ -146,34 +142,13 @@ class Artists extends Component {
 						</button>{' '}
 					</div>
 					<div className="filter">
-						{console.log(this.state)}
-						<FormControl>
-							<InputLabel id="demo-mutiple-chip-label">
-								Artists
-							</InputLabel>
-							<Select
-								labelId="demo-mutiple-chip-label"
-								id="demo-mutiple-chip"
-								multiple
-								value={this.state.personName}
+						<div>
+							<MultiSelect
+								options={names}
+								value={this.state.selected}
 								onChange={handleFilter}
-								input={<Input id="select-multiple-chip" />}
-								renderValue={(selected) => (
-									<div>
-										{selected.map((value) => (
-											<Chip key={value} label={value} />
-										))}
-									</div>
-								)}
-								//MenuProps={MenuProps}
-							>
-								{names.map((name) => (
-									<MenuItem key={name} value={name}>
-										{name}
-									</MenuItem>
-								))}
-							</Select>
-						</FormControl>
+							/>
+						</div>
 					</div>
 					<div className="artists">
 						{artists.length &&
