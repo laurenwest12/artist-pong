@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+
+import Input from '@material-ui/core/Input';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Chip from '@material-ui/core/Chip';
+
 import {
 	getArtistsThunk,
 	sortArtistsThunk,
@@ -20,6 +28,7 @@ class Artists extends Component {
 			avgSongs: true,
 			avgPick: false,
 			shared: true,
+			personName: [],
 		};
 	}
 
@@ -33,6 +42,9 @@ class Artists extends Component {
 	render() {
 		const { artists, pickedItems, pongs, sortArtists, filterArtists } =
 			this.props;
+
+		const names = artists.map((artist) => artist.name);
+		const testData = ['Little Mix', 'Kehlani'];
 
 		const handleSort = (type, order) => {
 			sortArtists(type, order);
@@ -50,81 +62,119 @@ class Artists extends Component {
 			this.setState(defaultState);
 		};
 
+		const handleFilter = ({ target }) => {
+			this.setState({
+				personName: target.value,
+			});
+		};
+
 		return (
 			artists.length &&
 			pongs.length &&
 			pickedItems.length && (
 				<div className="container">
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							handleSort('pickedItems', !this.state.pickedItems);
-						}}
-					>
-						SORT BY TIMES USED
-					</button>
-
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							handleSort('lastCall', !this.state.lastCall);
-						}}
-					>
-						SORT BY LAST CALL
-					</button>
-
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							handleSort('avgSongs', !this.state.avgSongs);
-						}}
-					>
-						SORT BY AVERAGE # SONGS
-					</button>
-
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							handleSort('avgPick', !this.state.avgPick);
-						}}
-					>
-						SORT BY AVERAGE PICK
-					</button>
-
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							handleSort('shared', !this.state.shared);
-						}}
-					>
-						SORT BY TIMES SHARED
-					</button>
-
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							handleSort('popularity', !this.state.popularity);
-						}}
-					>
-						SORT BY POPULARITY
-					</button>
-
-					<button
-						type="button"
-						className="sort"
-						onClick={() => {
-							handleSort('name', !this.state.name);
-						}}
-					>
-						SORT BY NAME
-					</button>
-
+					<div className="sort">
+						{' '}
+						<button
+							type="button"
+							className="sort"
+							onClick={() => {
+								handleSort(
+									'pickedItems',
+									!this.state.pickedItems
+								);
+							}}
+						>
+							SORT BY TIMES USED
+						</button>
+						<button
+							type="button"
+							className="sort"
+							onClick={() => {
+								handleSort('lastCall', !this.state.lastCall);
+							}}
+						>
+							SORT BY LAST CALL
+						</button>
+						<button
+							type="button"
+							className="sort"
+							onClick={() => {
+								handleSort('avgSongs', !this.state.avgSongs);
+							}}
+						>
+							SORT BY AVERAGE # SONGS
+						</button>
+						<button
+							type="button"
+							className="sort"
+							onClick={() => {
+								handleSort('avgPick', !this.state.avgPick);
+							}}
+						>
+							SORT BY AVERAGE PICK
+						</button>
+						<button
+							type="button"
+							className="sort"
+							onClick={() => {
+								handleSort('shared', !this.state.shared);
+							}}
+						>
+							SORT BY TIMES SHARED
+						</button>
+						<button
+							type="button"
+							className="sort"
+							onClick={() => {
+								handleSort(
+									'popularity',
+									!this.state.popularity
+								);
+							}}
+						>
+							SORT BY POPULARITY
+						</button>
+						<button
+							type="button"
+							className="sort"
+							onClick={() => {
+								handleSort('name', !this.state.name);
+							}}
+						>
+							SORT BY NAME
+						</button>{' '}
+					</div>
+					<div className="filter">
+						{console.log(this.state)}
+						<FormControl>
+							<InputLabel id="demo-mutiple-chip-label">
+								Artists
+							</InputLabel>
+							<Select
+								labelId="demo-mutiple-chip-label"
+								id="demo-mutiple-chip"
+								multiple
+								value={this.state.personName}
+								onChange={handleFilter}
+								input={<Input id="select-multiple-chip" />}
+								renderValue={(selected) => (
+									<div>
+										{selected.map((value) => (
+											<Chip key={value} label={value} />
+										))}
+									</div>
+								)}
+								//MenuProps={MenuProps}
+							>
+								{names.map((name) => (
+									<MenuItem key={name} value={name}>
+										{name}
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
+					</div>
 					<div className="artists">
 						{artists.length &&
 							artists.map((artist) => (

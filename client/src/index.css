@@ -31,3 +31,7 @@ code {
 .artists-artist-name {
 	font-size: 1.5em;
 }
+
+.filter-artists {
+	width: 300px;
+}
