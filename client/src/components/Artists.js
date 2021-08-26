@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import MultiSelect from 'react-multi-select-component';
+import Select from 'react-select';
 
 import {
 	getArtistsThunk,
 	sortArtistsThunk,
 	filterArtistsThunk,
 } from '../redux/artists';
+import { getArtistNamesThunk } from '../redux/artistNames';
 import { getPickedItemsThunk } from '../redux/pickedItems';
 import { getPongsThunk } from '../redux/pongs';
 
@@ -22,28 +23,40 @@ class Artists extends Component {
 			avgSongs: true,
 			avgPick: false,
 			shared: true,
-			selected: [],
+			filter: [],
 		};
 	}
 
 	async componentDidMount() {
-		const { getPickedItems, getPongs, sortArtists } = this.props;
+		const { getPickedItems, getPongs, sortArtists, getArtistNames } =
+			this.props;
 		await getPickedItems();
 		await getPongs();
 		await sortArtists('pickedItems', false);
+		await getArtistNames();
 	}
 
 	render() {
-		const { artists, pickedItems, pongs, sortArtists, filterArtists } =
-			this.props;
+		const {
+			artists,
+			artistNames,
+			pickedItems,
+			pongs,
+			sortArtists,
+			filterArtists,
+		} = this.props;
 
-		const names = artists.map((artist) => ({
-			label: artist.name,
-			value: artist.name,
-		}));
+		const names =
+			artistNames &&
+			artistNames.map((artist) => ({
+				type: 'name',
+				label: artist,
+				value: artist,
+			}));
 
 		const handleSort = (type, order) => {
-			sortArtists(type, order);
+			sortArtists(type, order, this.state.filter);
+
 			let defaultState = {
 				popularity: true,
 				name: false,
@@ -59,9 +72,14 @@ class Artists extends Component {
 		};
 
 		const handleFilter = (event) => {
-			this.setState({
-				selected: event,
-			});
+			this.setState(
+				{
+					filter: event,
+				},
+				() => {
+					filterArtists(this.state.filter);
+				}
+			);
 		};
 
 		return (
@@ -142,13 +160,11 @@ class Artists extends Component {
 						</button>{' '}
 					</div>
 					<div className="filter">
-						<div>
-							<MultiSelect
-								options={names}
-								value={this.state.selected}
-								onChange={handleFilter}
-							/>
-						</div>
+						<Select
+							isMulti
+							options={names}
+							onChange={handleFilter}
+						/>
 					</div>
 					<div className="artists">
 						{artists.length &&
@@ -210,6 +226,7 @@ class Artists extends Component {
 const mapStateToProps = (state) => {
 	return {
 		artists: state.artists,
+		artistNames: state.artistNames,
 		pickedItems: state.pickedItems,
 		pongs: state.pongs,
 	};
@@ -218,7 +235,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		getArtists: () => dispatch(getArtistsThunk()),
-		sortArtists: (type, order) => dispatch(sortArtistsThunk(type, order)),
+		getArtistNames: () => dispatch(getArtistNamesThunk()),
+		sortArtists: (type, order, filter) =>
+			dispatch(sortArtistsThunk(type, order, filter)),
 		filterArtists: (obj) => dispatch(filterArtistsThunk(obj)),
 		getPickedItems: () => dispatch(getPickedItemsThunk()),
 		getPongs: () => dispatch(getPongsThunk()),

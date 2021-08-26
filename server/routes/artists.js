@@ -1,14 +1,9 @@
 const router = require('express').Router();
 const { Op } = require('sequelize');
-const { sortArtists } = require('../utils/sort');
+const { sortArtists, sortNames } = require('../utils/sort');
 const { Artist, PickedItem } = require('../db/models/index');
 
-router.get('/', async (req, res) => {
-	const artistsRes = await Artist.findAll({
-		include: PickedItem,
-	});
-	const sortedArtists = artistsRes.sort(sortArtists('name', true));
-
+const addAdditionalAttributes = (sortedArtists) => {
 	let artists = [];
 	for (let i = 0; i < sortedArtists.length; ++i) {
 		let artist = sortedArtists[i].dataValues;
@@ -41,33 +36,58 @@ router.get('/', async (req, res) => {
 			shared,
 		});
 	}
+	return artists;
+};
+
+router.get('/', async (req, res) => {
+	const artistsRes = await Artist.findAll({
+		include: PickedItem,
+	});
+	const sortedArtists = artistsRes.sort(sortArtists('name', true));
+	const artists = addAdditionalAttributes(sortedArtists);
 
 	res.send(artists);
+});
+
+router.get('/names', async (req, res) => {
+	const artists = await Artist.findAll();
+	const artistNames = artists.map((artist) => artist.name);
+	const sortedNames = artistNames.sort(sortNames);
+	res.send(sortedNames);
 });
 
 router.get('/filtered?', async (req, res) => {
 	const query = req.query;
 	let artistsParams = [];
 
-	query.name &&
-		query.name.map((artist) => {
-			artistsParams.push({
-				name: artist,
+	if (query.name) {
+		if (Array.isArray(query.name)) {
+			query.name.map((artist) => {
+				artistsParams.push({
+					name: artist,
+				});
 			});
-		});
+		} else {
+			artistsParams.push({
+				name: query.name,
+			});
+		}
+	}
 
-	const artists = await Artist.findAll({
+	const artistsRes = await Artist.findAll({
 		where: {
 			[Op.or]: artistsParams,
 		},
 		include: PickedItem,
 	});
+	const sortedArtists = artistsRes.sort(sortArtists('name', true));
+	const artists = addAdditionalAttributes(sortedArtists);
 
 	res.send(artists);
 });
 
 router.get('/:id', async (req, res) => {
-	let artist = await Artist.findByPk(req.params.id);
+	const artist = await Artist.findByPk(req.params.id);
 	res.send(artist);
 });
 

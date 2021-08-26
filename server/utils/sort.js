@@ -16,6 +16,20 @@ const sortArtists = (key, order) => {
 	};
 };
 
+const sortNames = (a, b) => {
+	const varA = a.toUpperCase();
+	const varB = b.toUpperCase();
+
+	let comparison = 0;
+	if (varA > varB) {
+		comparison = 1;
+	} else if (varA < varB) {
+		comparison = -1;
+	}
+	return comparison;
+};
+
 module.exports = {
 	sortArtists,
+	sortNames,
 };

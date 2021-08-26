@@ -1,7 +1,7 @@
 import axios from 'axios';
-import queryString from 'query-string';
 
 import { sortArtists } from '../helperFunctions/sort';
+import { getFilterUrl } from '../helperFunctions/filterUrl';
 
 //constants
 const GET_ARTISTS = 'GET_ARTISTS';
@@ -21,10 +21,11 @@ export const getArtistsThunk = () => {
 	};
 };
 
-export const sortArtistsThunk = (type, order) => {
+export const sortArtistsThunk = (type, order, filter) => {
 	return (dispatch) => {
+		const url = getFilterUrl(filter);
 		if (type === 'pickedItems' || type === 'lastCall') {
-			axios.get('/api/artists').then(({ data }) => {
+			axios.get(url).then(({ data }) => {
 				let artists;
 				if (type === 'lastCall') {
 					const lastCallData = data.reduce((acc, artist) => {
@@ -36,6 +37,9 @@ export const sortArtistsThunk = (type, order) => {
 							images,
 							popularity,
 							pickedItems,
+							avgSongs,
+							avgPick,
+							shared,
 						} = artist;
 						const lastCall = pickedItems.filter(
 							(item) => item.lastCall
@@ -49,6 +53,9 @@ export const sortArtistsThunk = (type, order) => {
 							popularity,
 							pickedItems,
 							lastCall,
+							avgSongs,
+							avgPick,
+							shared,
 						});
 						return acc;
 					}, []);
@@ -59,7 +66,7 @@ export const sortArtistsThunk = (type, order) => {
 				return dispatch(getArtists(artists));
 			});
 		} else {
-			axios.get('/api/artists').then(({ data }) => {
+			axios.get(url).then(({ data }) => {
 				let artists = data.sort(sortArtists(type, order));
 				return dispatch(getArtists(artists));
 			});
@@ -67,10 +74,10 @@ export const sortArtistsThunk = (type, order) => {
 	};
 };
 
-export const filterArtistsThunk = (obj) => {
+export const filterArtistsThunk = (arr) => {
 	return (dispatch) => {
-		const url = queryString.stringify(obj);
-		axios.get(`/api/artists/filtered/?${url}`).then(({ data }) => {
+		const url = getFilterUrl(arr);
+		axios.get(url).then(({ data }) => {
 			return dispatch(getArtists(data));
 		});
 	};
