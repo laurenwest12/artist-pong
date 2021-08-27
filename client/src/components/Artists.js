@@ -109,7 +109,7 @@ class Artists extends Component {
 				);
 			}
 		};
-
+		console.log(artists)
 		return (
 			artists.length &&
 			pongs.length &&

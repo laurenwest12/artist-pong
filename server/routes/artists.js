@@ -8,7 +8,6 @@ const addAdditionalAttributes = (sortedArtists) => {
 	for (let i = 0; i < sortedArtists.length; ++i) {
 		const artist = sortedArtists[i].dataValues;
 		const pickedItems = artist.pickedItems.map((item) => item.dataValues);
-		const lastCall = pickedItems.filter((item) => item.lastCall);
 		const avgSongs =
 			Math.round(
 				(100 *
@@ -30,21 +29,62 @@ const addAdditionalAttributes = (sortedArtists) => {
 		const shared = pickedItems.filter((item) => item.userId === 5).length;
 		artist.pickedItems = pickedItems;
 
-		const pickedBy = pickedItems.reduce((acc, item) => {
-			!acc.includes(item.userId) && acc.push(item.userId);
-			return acc;
-		}, []);
-
 		artists.push({
 			...artist,
 			avgSongs,
 			avgPick,
 			shared,
-			pickedBy,
 		});
 	}
 	return artists;
 };
+
+const addUserFilter = (artists, users) => {
+	let filteredArtists = [];
+	for (let i = 0; i < artists.length; ++i) {
+		let artist = artists[i]
+		const { name, genres, followers, spotifyId, images, popularity, createdAt, updatedAt, pickedItems, shared } = artist
+
+		const userPickedItems = pickedItems.filter((item) => users.includes(item.userId))
+		console.log(userPickedItems)
+		const avgSongs =
+		Math.round(
+			(100 *
+				userPickedItems.reduce((acc, item) => {
+					acc += item.numSongs;
+					return acc;
+				}, 0)) /
+				userPickedItems.length
+		) / 100;
+		const avgPick =
+			Math.round(
+				(100 *
+					userPickedItems.reduce((acc, item) => {
+						acc += item.pickNumber;
+						return acc;
+					}, 0)) /
+					userPickedItems.length
+			) / 100;
+
+			if (userPickedItems.length) {
+				filteredArtists.push({
+					name,
+					genres,
+					followers,
+					spotifyId,
+					images,
+					popularity,
+					createdAt,
+					updatedAt,
+					pickedItems: userPickedItems,
+					avgSongs,
+					avgPick,
+					shared
+				})
+			}
+	}
+	return filteredArtists
+}
 
 router.get('/', async (req, res) => {
 	const artistsRes = await Artist.findAll({
@@ -67,8 +107,6 @@ router.get('/filtered?', async (req, res) => {
 	const query = req.query;
 	let artists;
 	let artistsParams = [];
-
-	console.log(req.query);
 
 	if (query.name) {
 		if (Array.isArray(query.name)) {
@@ -99,9 +137,14 @@ router.get('/filtered?', async (req, res) => {
 	}
 
 	if (query.user) {
-		artists = artists.filter((artist) => artist.includes(query.user));
+		const users = [];
+		if (!Array.isArray(query.user)) {
+			users.push(parseInt(query.user))
+		} else {
+			query.user.map(user => users.push(parseInt(user)))
+		}
+		artists = addUserFilter(artists, users)
 	}
-
 	res.send(artists);
 });
 

@@ -160,19 +160,23 @@ const syncAndSeed = async () => {
 
 	return db
 		.authenticate()
-		.then(() => db.sync({ force: false }))
+		.then(() => db.sync({ force: true }))
 		.then(async () => {
 			console.log('Authenticated');
+			console.log('creating users')
 			return createInstances(User, usersData);
 		})
 		.then(async () => {
+			console.log('creating pongs')
 			return createInstances(Pong, pongsData);
 		})
 		.then(async () => {
+			console.log('creating artists')
 			return createInstances(Artist, artistsData);
 		})
 		.then(async () => {
 			const pickedItems = await getPickedItems();
+			console.log('creating picked items')
 			return createInstances(PickedItem, pickedItems);
 		});
 };
