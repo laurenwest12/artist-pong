@@ -24,6 +24,7 @@ export const getArtistsThunk = () => {
 export const sortArtistsThunk = (type, order, filter) => {
 	return (dispatch) => {
 		const url = getFilterUrl(filter);
+		console.log(filter);
 		if (type === 'pickedItems' || type === 'lastCall') {
 			axios.get(url).then(({ data }) => {
 				let artists;

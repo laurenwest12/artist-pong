@@ -72,7 +72,10 @@ class Artists extends Component {
 			}));
 
 		const handleSort = (type, order) => {
-			sortArtists(type, order, this.state.artistFilter);
+			sortArtists(type, order, [
+				...this.state.artistFilter,
+				...this.state.userFilter,
+			]);
 
 			let defaultState = {
 				popularity: true,
@@ -109,7 +112,6 @@ class Artists extends Component {
 				);
 			}
 		};
-		console.log(artists)
 		return (
 			artists.length &&
 			pongs.length &&
