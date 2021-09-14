@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { Op } = require('sequelize');
 const { sortArtists, sortNames } = require('../utils/sort');
 const { Artist, PickedItem, User } = require('../db/models/index');
+const e = require('express');
 
 const addAdditionalAttributes = (sortedArtists) => {
 	let artists = [];
@@ -42,20 +43,33 @@ const addAdditionalAttributes = (sortedArtists) => {
 const addUserFilter = (artists, users) => {
 	let filteredArtists = [];
 	for (let i = 0; i < artists.length; ++i) {
-		let artist = artists[i]
-		const { name, genres, followers, spotifyId, images, popularity, createdAt, updatedAt, pickedItems, shared } = artist
+		let artist = artists[i];
+		const {
+			name,
+			genres,
+			followers,
+			spotifyId,
+			images,
+			popularity,
+			createdAt,
+			updatedAt,
+			pickedItems,
+			shared,
+		} = artist;
 
-		const userPickedItems = pickedItems.filter((item) => users.includes(item.userId))
-		console.log(userPickedItems)
+		const userPickedItems = pickedItems.filter((item) =>
+			users.includes(item.userId)
+		);
+
 		const avgSongs =
-		Math.round(
-			(100 *
-				userPickedItems.reduce((acc, item) => {
-					acc += item.numSongs;
-					return acc;
-				}, 0)) /
-				userPickedItems.length
-		) / 100;
+			Math.round(
+				(100 *
+					userPickedItems.reduce((acc, item) => {
+						acc += item.numSongs;
+						return acc;
+					}, 0)) /
+					userPickedItems.length
+			) / 100;
 		const avgPick =
 			Math.round(
 				(100 *
@@ -66,25 +80,46 @@ const addUserFilter = (artists, users) => {
 					userPickedItems.length
 			) / 100;
 
-			if (userPickedItems.length) {
-				filteredArtists.push({
-					name,
-					genres,
-					followers,
-					spotifyId,
-					images,
-					popularity,
-					createdAt,
-					updatedAt,
-					pickedItems: userPickedItems,
-					avgSongs,
-					avgPick,
-					shared
-				})
-			}
+		if (userPickedItems.length) {
+			filteredArtists.push({
+				name,
+				genres,
+				followers,
+				spotifyId,
+				images,
+				popularity,
+				createdAt,
+				updatedAt,
+				pickedItems: userPickedItems,
+				avgSongs,
+				avgPick,
+				shared,
+			});
+		}
 	}
-	return filteredArtists
-}
+	return filteredArtists;
+};
+
+const removeUserFilter = (artists, users, allArtists) => {
+	const notUsedArtists = [];
+
+	for (let i = 0; i < allArtists.length; ++i) {
+		const artist = allArtists[i];
+		const pickedItems = artist.pickedItems.filter((item) =>
+			users.includes(item.userId)
+		);
+
+		if (pickedItems.length === 0) {
+			notUsedArtists.push(artist.name);
+		}
+	}
+
+	const filteredArtists = artists.filter((artist) =>
+		notUsedArtists.includes(artist.name)
+	);
+
+	return filteredArtists;
+};
 
 router.get('/', async (req, res) => {
 	const artistsRes = await Artist.findAll({
@@ -104,6 +139,12 @@ router.get('/names', async (req, res) => {
 });
 
 router.get('/filtered?', async (req, res) => {
+	const artistsRes = await Artist.findAll({
+		include: PickedItem,
+	});
+	const sortedArtists = artistsRes.sort(sortArtists('name', true));
+	const allArtists = addAdditionalAttributes(sortedArtists);
+
 	const query = req.query;
 	let artists;
 	let artistsParams = [];
@@ -139,12 +180,24 @@ router.get('/filtered?', async (req, res) => {
 	if (query.user) {
 		const users = [];
 		if (!Array.isArray(query.user)) {
-			users.push(parseInt(query.user))
+			users.push(parseInt(query.user));
 		} else {
-			query.user.map(user => users.push(parseInt(user)))
+			query.user.map((user) => users.push(parseInt(user)));
 		}
-		artists = addUserFilter(artists, users)
+		artists = addUserFilter(artists, users);
 	}
+
+	if (query.notUser) {
+		const notUsers = [];
+		if (!Array.isArray(query.notUser)) {
+			notUsers.push(parseInt(query.notUser));
+		} else {
+			query.notUser.map((user) => notUsers.push(parseInt(user)));
+		}
+
+		artists = removeUserFilter(artists, notUsers, allArtists);
+	}
+
 	res.send(artists);
 });
 

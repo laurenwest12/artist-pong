@@ -18,7 +18,11 @@ export const getFilterUrl = (filter) => {
 		}
 	} else {
 		if (filter) {
-			const arr = [...filter.artistFilter, ...filter.userFilter];
+			const arr = [
+				...filter.artistFilter,
+				...filter.userFilter,
+				...filter.notUserFilter,
+			];
 			if (arr.length) {
 				const filterObj = arr.reduce((acc, filter) => {
 					if (!acc[filter.type]) {
@@ -37,8 +41,6 @@ export const getFilterUrl = (filter) => {
 			return `/api/artists`;
 		}
 	}
-
-
 
 	// }
 	// if (obj) {

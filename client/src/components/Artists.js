@@ -26,6 +26,7 @@ class Artists extends Component {
 			shared: true,
 			artistFilter: [],
 			userFilter: [],
+			notUserFilter: [],
 		};
 	}
 
@@ -71,10 +72,19 @@ class Artists extends Component {
 				value: user.id,
 			}));
 
+		const notUsersFilter =
+			users &&
+			users.map((user) => ({
+				type: 'notUser',
+				label: user.username,
+				value: user.id,
+			}));
+
 		const handleSort = (type, order) => {
 			sortArtists(type, order, [
 				...this.state.artistFilter,
 				...this.state.userFilter,
+				...this.state.notUserFilter,
 			]);
 
 			let defaultState = {
@@ -105,6 +115,15 @@ class Artists extends Component {
 				this.setState(
 					{
 						userFilter: event,
+					},
+					() => {
+						filterArtists(this.state);
+					}
+				);
+			} else if (type === 'notUser') {
+				this.setState(
+					{
+						notUserFilter: event,
 					},
 					() => {
 						filterArtists(this.state);
@@ -200,6 +219,12 @@ class Artists extends Component {
 							isMulti
 							options={usersFilter}
 							onChange={handleFilter('user')}
+						/>
+
+						<Select
+							isMulti
+							options={notUsersFilter}
+							onChange={handleFilter('notUser')}
 						/>
 					</div>
 					<div className="artists">
