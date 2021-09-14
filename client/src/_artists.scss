@@ -1,0 +1,23 @@
+.artists {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+
+	&__artist {
+		padding: 1em;
+
+		&__img {
+			width: 20em;
+			height: 20em;
+			object-fit: cover;
+		}
+
+		&__name {
+			font-size: 1.5em;
+		}
+	}
+
+	&__filter {
+		width: 300px;
+	}
+}

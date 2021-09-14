@@ -1,3 +1,5 @@
+@import 'artists';
+
 body {
 	margin: 0;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
@@ -10,28 +12,4 @@ body {
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
 		monospace;
-}
-
-.artists {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-}
-
-.artists-artist {
-	padding: 1em;
-}
-
-.artists-artist-img {
-	width: 20em;
-	height: 20em;
-	object-fit: cover;
-}
-
-.artists-artist-name {
-	font-size: 1.5em;
-}
-
-.filter-artists {
-	width: 300px;
 }

@@ -231,29 +231,29 @@ class Artists extends Component {
 						{artists.length &&
 							artists.map((artist) => (
 								<div
-									className="artists-artist"
+									className="artists__artist"
 									key={artist.name}
 								>
 									<div>
 										{artist.images.length ? (
 											<img
-												className="artists-artist-img"
+												className="artists__artist__img"
 												src={artist.images[1].url}
 												alt={artist.name}
 											/>
 										) : (
 											<img
-												className="artists-artist-img"
+												className="artists__artist__img"
 												src="https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1050&q=80"
 												alt={artist.name}
 											/>
 										)}
 									</div>
 
-									<div className="artists-artist-name">
+									<div className="artists__artist__name">
 										{artist.name}
 									</div>
-									<div className="artists-artist-info">
+									<div className="artists__artist__info">
 										Times Used: {artist.pickedItems.length}
 										<br />
 										Times Last Call:{' '}
