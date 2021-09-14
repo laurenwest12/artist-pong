@@ -208,7 +208,7 @@ class Artists extends Component {
 							SORT BY NAME
 						</button>{' '}
 					</div>
-					<div className="filter">
+					<div className="artists__filter">
 						<Select
 							isMulti
 							options={artistsFilter}
