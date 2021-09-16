@@ -1,0 +1,58 @@
+@import './base';
+
+.container {
+	background: $primary-color;
+}
+
+.artists {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+
+	&__artist {
+		display: flex;
+		align-items: center;
+		padding: 1em 1em 2em 1em;
+
+		&__img {
+			z-index: 0;
+			width: 15em;
+			height: 15em;
+			object-fit: cover;
+			border-radius: 0.25em;
+			margin-left: -10%;
+			margin-top: -10%;
+			padding-bottom: 5%;
+
+			&__border {
+				border: 0.25em solid $tertiary-color;
+			}
+		}
+
+		&__container {
+			padding: 0.5em 1em 0.5em 1em;
+			z-index: 1;
+			background: $tertiary-color;
+			text-align: right;
+			border-radius: 0.25em;
+
+			&__name {
+				//background: $tertiary-color;
+				font-size: 1.5em;
+				font-family: $heading-font;
+				border-radius: 1em;
+			}
+
+			&__info {
+				//background: $secondary-color;
+				//background: rgba(255, 255, 255, 0.9);
+				font-size: 0.9em;
+				width: 13em;
+			}
+		}
+	}
+
+	&__filter {
+		width: 300px;
+	}
+}

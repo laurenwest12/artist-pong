@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 const navTabs = [
-	{ name: 'Home', path: '/home' },
+	{ name: 'Home', path: '/' },
 	{ name: 'Artists', path: '/artists' },
 	{ name: 'Pongs', path: '/pongs' },
 	{ name: 'Users', path: '/users' },

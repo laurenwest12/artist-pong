@@ -1,15 +1,17 @@
-@import 'artists';
+@import './styles/artists';
+//@import 'nav';
+
+//@use 'base';
+
+@import './styles/base';
+
+// $heading-font: 'DM Serif Display', serif;
+// $body-font: 'DM Sans', sans-serif;
 
 body {
 	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-		'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-		'Helvetica Neue', sans-serif;
+	//font-family: 'DM Serif Display', serif;
+	font-family: $body-font;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-}
-
-code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-		monospace;
 }

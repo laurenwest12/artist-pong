@@ -234,7 +234,37 @@ class Artists extends Component {
 									className="artists__artist"
 									key={artist.name}
 								>
-									<div>
+									<div className="artists__artist__container">
+										<div className="artists__artist__container__name">
+											{artist.name}
+										</div>
+										<div className="artists__artist__container__info">
+											Times Used:{' '}
+											{artist.pickedItems.length}
+											<br />
+											Times Last Call:{' '}
+											{
+												pickedItems.filter(
+													(item) =>
+														item.artistName ===
+															artist.name &&
+														item.lastCall
+												).length
+											}
+											<br />
+											Avg Number of Songs:{' '}
+											{artist.avgSongs}
+											<br />
+											Times Shared: {artist.shared}
+											<br />
+											Avg Pick Number: {artist.avgPick}
+											<br />
+											Spotify Popularity:{' '}
+											{artist.popularity}
+										</div>
+									</div>
+
+									<div className="artists__artist__img__border">
 										{artist.images.length ? (
 											<img
 												className="artists__artist__img"
@@ -248,32 +278,6 @@ class Artists extends Component {
 												alt={artist.name}
 											/>
 										)}
-									</div>
-
-									<div className="artists__artist__name">
-										{artist.name}
-									</div>
-									<div className="artists__artist__info">
-										Times Used: {artist.pickedItems.length}
-										<br />
-										Times Last Call:{' '}
-										{
-											pickedItems.filter(
-												(item) =>
-													item.artistName ===
-														artist.name &&
-													item.lastCall
-											).length
-										}
-										<br />
-										Average Number of Songs:{' '}
-										{artist.avgSongs}
-										<br />
-										Times Shared: {artist.shared}
-										<br />
-										Average Pick Number: {artist.avgPick}
-										<br />
-										Spotify Popularity: {artist.popularity}
 									</div>
 								</div>
 							))}
