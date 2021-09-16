@@ -1,5 +1,5 @@
 @import './styles/artists';
-//@import 'nav';
+@import './styles/nav';
 
 //@use 'base';
 
@@ -12,6 +12,7 @@ body {
 	margin: 0;
 	//font-family: 'DM Serif Display', serif;
 	font-family: $body-font;
+	background-color: $primary-color;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }

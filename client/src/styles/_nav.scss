@@ -1,0 +1,19 @@
+@import './base';
+
+.nav {
+	display: flex;
+	justify-content: right;
+	font-family: $heading-font;
+	font-size: 1.25em;
+	background: $primary-color;
+
+	&__tabs {
+		padding-top: 5vh;
+		padding-right: 10vw;
+	}
+	&__link {
+		text-decoration: none;
+		color: $tertiary-color;
+		padding-right: 2em;
+	}
+}

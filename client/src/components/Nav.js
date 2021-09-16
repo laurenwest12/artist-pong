@@ -7,14 +7,15 @@ const navTabs = [
 	{ name: 'Artists', path: '/artists' },
 	{ name: 'Pongs', path: '/pongs' },
 	{ name: 'Users', path: '/users' },
+	{ name: 'Log In', path: '/login' },
 ];
 
 const Nav = () => {
 	return (
 		<div className="nav">
-			{navTabs.map((tab) => {
-				return (
-					<div class="nav-tabs">
+			<div class="nav__tabs">
+				{navTabs.map((tab) => {
+					return (
 						<Link
 							key={tab.name}
 							to={tab.path}
@@ -22,12 +23,9 @@ const Nav = () => {
 						>
 							{tab.name}
 						</Link>
-					</div>
-				);
-			})}
-			<Link to="/login" className="nav__link">
-				Log In
-			</Link>
+					);
+				})}
+			</div>
 		</div>
 	);
 };
