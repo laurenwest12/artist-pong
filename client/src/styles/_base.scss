@@ -5,5 +5,13 @@ $tertiary-color: #000;
 $quinary-color: #8265a7;
 
 //fonts
-$heading-font: 'DM Serif Display', serif;
-$body-font: 'Roboto', sans-serif;
+@mixin heading-font() {
+	font-family: 'Kufam', 'sans-serif';
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+@mixin body-font() {
+	font-family: 'Kufam', 'sans-serif';
+	font-weight: 400;
+}

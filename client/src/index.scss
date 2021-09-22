@@ -1,9 +1,7 @@
 @import './styles/artists';
 @import './styles/nav';
 @import './styles/buttons';
-
-//@use 'base';
-
+@import './styles/home';
 @import './styles/base';
 
 // $heading-font: 'DM Serif Display', serif;
@@ -12,7 +10,7 @@
 body {
 	margin: 0;
 	//font-family: 'DM Serif Display', serif;
-	font-family: $body-font;
+	@include body-font;
 	background-color: $primary-color;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;

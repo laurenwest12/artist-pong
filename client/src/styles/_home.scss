@@ -1,0 +1,28 @@
+@import './base';
+
+.home {
+	&__section {
+		display: flex;
+		align-items: center;
+
+		&__image {
+			padding-left: 5em;
+			width: 40vw;
+		}
+
+		&__info {
+			padding: 5em 15em 5em 5em;
+
+			& h1 {
+				@include heading-font;
+				text-transform: uppercase;
+				font-size: 4em;
+				margin: 0;
+			}
+
+			& p {
+				@include body-font;
+			}
+		}
+	}
+}
