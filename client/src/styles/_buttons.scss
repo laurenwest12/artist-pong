@@ -1,0 +1,19 @@
+@import './base';
+
+.btn {
+	&__primary {
+		background-color: $tertiary-color;
+		color: $primary-color;
+		border: none;
+		padding: 0.25em 1.2em;
+		//width: 8em;
+		font-family: $heading-font;
+		font-size: 1.25em;
+		&:hover {
+			background-color: $primary-color;
+			color: $tertiary-color;
+			border: 0.1em solid $tertiary-color;
+			cursor: pointer;
+		}
+	}
+}

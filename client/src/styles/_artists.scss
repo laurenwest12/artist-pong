@@ -13,14 +13,14 @@
 		display: flex;
 		align-items: center;
 		padding: 1em 1em 2em 1em;
-		color: $primary-color;
+		color: $tertiary-color;
 
 		&__img {
 			z-index: 0;
 			width: 15em;
 			height: 15em;
 			object-fit: cover;
-			border-radius: 0.25em;
+			//border-radius: 0.25em;
 			margin-left: -10%;
 			margin-top: -10%;
 			padding-bottom: 5%;
@@ -33,9 +33,10 @@
 		&__container {
 			padding: 0.5em 1em 0.5em 1em;
 			z-index: 1;
-			background: $tertiary-color;
+			background: $primary-color;
 			text-align: right;
-			border-radius: 0.25em;
+			margin-right: 5%;
+			//border-radius: 0.25em;
 
 			&__name {
 				//background: $tertiary-color;
@@ -49,6 +50,7 @@
 				//background: rgba(255, 255, 255, 0.9);
 				font-size: 0.9em;
 				width: 13em;
+				padding-bottom: 1em;
 			}
 		}
 	}

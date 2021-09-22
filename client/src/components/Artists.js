@@ -262,6 +262,9 @@ class Artists extends Component {
 											Spotify Popularity:{' '}
 											{artist.popularity}
 										</div>
+										<button className="btn__primary">
+											View
+										</button>
 									</div>
 
 									<div className="artists__artist__img__border">

@@ -11,9 +11,14 @@
 		padding-top: 5vh;
 		padding-right: 10vw;
 	}
+
 	&__link {
 		text-decoration: none;
 		color: $tertiary-color;
 		padding-right: 2em;
+
+		&:hover {
+			font-size: 1.1em;
+		}
 	}
 }
